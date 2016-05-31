@@ -181,10 +181,10 @@ def download_files_from_groups(email=default_email,
         else:
             groups_tuples.append(group_tuple[0])
 
-    for item in all_groups_of_user:
+    for group_name, group_id in all_groups_of_user:
         #if was added before, continue
-        group_tuple = [item for item in all_groups_of_user if item[0] == group_name]
-        if len(group_tuple) > 0:
+        is_group_in_groups_to_download = len([item for item in groups_to_download if item == group_name]) > 0
+        if is_group_in_groups_to_download:
             continue
 
         #if no label in group, continue
@@ -192,7 +192,7 @@ def download_files_from_groups(email=default_email,
         if not is_any_label_in_group:
             continue
 
-        groups_tuples.append(item)
+        groups_tuples.append((group_name,group_id))
 
     print "getting groups videos urls for groups:"
     for gname, gid in groups_tuples:
@@ -225,7 +225,8 @@ def main(argv):
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', "--help"):
-            print """video_downloader.py -e <email> -p <password> -g '["<groupName1>","<groupName2>"]' -o <outputDir>"""
+            print """video_downloader.py -e <email> -p <password> -g '["<groupName1>","<groupName2>"]' """ + \
+                  """-o <outputDir> -l '["<groupName1>","<groupName2>"]' -t '["4_tim","14_tim"]'"""
             sys.exit()
         elif opt in ("-e", "--email"):
             new_config["email"] = arg
