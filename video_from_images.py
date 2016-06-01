@@ -5,12 +5,6 @@ from operator import itemgetter
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-<<<<<<< Updated upstream
-FILE_DIR = os.path.abspath(os.path.dirname(__file__))
-#FILE_DIR = os.path.abspath(os.path.dirname("."))
-
-=======
->>>>>>> Stashed changes
 defaut_work_dir = "dataset/4_tim"
 default_file_name = "thermix_1_testing.txt"
 default_output_dir = "mov"
@@ -57,9 +51,6 @@ def main():
         print "build video for class index %s" % c
         class_paths = files[c]
 
-<<<<<<< Updated upstream
-        output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
-=======
         # Sort video path
         videos_path = {}
         for file in class_paths:
@@ -76,8 +67,8 @@ def main():
         # END Sort
 
         # make video for class
-        output_path = os.path.join(output_dir, c+".mov")
->>>>>>> Stashed changes
+        output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
+
         output = av.open(output_path, 'w')
         stream = output.add_stream("mpeg4", "10")
 
