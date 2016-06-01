@@ -1,0 +1,207 @@
+['validation_indoor', 'validation_closeup', 'trash_17MAY16_1610pm', 'validation_lying', 'validation_outdoor', 'validation_standing', 'trash_17MAY16_17.51', 'validation_sitting', 'validation_close up']
+Processing group validation_indoor in label indoor
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A39.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A48.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A58.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A52.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A26.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A21.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A54.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A28.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A01.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A35.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A30.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A18.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A03.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A47.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A49.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A11.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A44.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A42.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A16.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A08.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A37.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A56.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A05.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A32.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A23.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A13.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A30.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A48.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A37.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A49.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A01.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A58.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A56.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A23.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A05%3A07.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A39.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A48%3A40.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A32.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A13.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A44.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A05.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A08.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A35.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A54.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A47.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A07%3A52.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A16.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A21.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A18.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A42.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A16%3A42.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A26.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A28.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A11.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A08%3A03.000000.mov
+Processing group validation_lying in label lying
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A52.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A30.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A23.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A28.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A46.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A25.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A20.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A33.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A50.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A20.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A33.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A50.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A28.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A05%3A44.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A46.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A07%3A33.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A52.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A23.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A08%3A13.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A30.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A09%3A46.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_03%3A10%3A25.000000.mov
+Processing group validation_outdoor in label outdoor
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A13.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A52%3A58.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A06.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A03.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A01.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A52%3A55.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A08.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A11.000000_1.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A08.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A13.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A03.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A52%3A58.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A06.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A52%3A55.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A11.000000.mov
+Generating frames of file Users_fb_fede_thermix_unkown_2016-05-18_01%3A53%3A01.000000.mov
+Processing group validation_standing in label standing
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A36%3A05.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_13%3A38%3A05.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A36%3A19.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A36%3A37.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_13%3A28%3A34.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A02%3A08.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A40%3A35.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A12%3A26.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A01%3A58.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A46%3A25.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A42%3A29.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A03%3A43.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A34%3A05.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A35%3A41.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A03%3A08.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A11%3A36.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A11%3A15.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A02%3A21.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A01%3A32.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A11%3A47.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A00%3A56.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A36%3A27.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_13%3A29%3A41.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A46%3A10.000000.mov
+Processing group validation_sitting in label sitting
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A10%3A23.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A00%3A26.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A58%3A30.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_17%3A57%3A51.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A50%3A34.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_16%3A10%3A43.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_17%3A58%3A34.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A04%3A34.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A45%3A26.000000.mov
+Processing group validation_close up in label close up
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_18%3A10%3A50.000000.mov
+Generating frames of file Users_fb_pablo_thermix_unkown_2016-05-17_15%3A59%3A40.000000.mov
+14_tim
+* category 1: 
+** total_frames= 1854
+** testing_frames= 382 (20.60%)
+* category 2: 
+** total_frames= 0
+** testing_frames= 0 (0.00%)
+* category 3: 
+** total_frames= 1146
+** testing_frames= 209 (18.24%)
+* category 4: 
+** total_frames= 1672
+** testing_frames= 281 (16.81%)
+* category 5: 
+** total_frames= 1334
+** testing_frames= 219 (16.42%)
+* category 6: 
+** total_frames= 2558
+** testing_frames= 492 (19.23%)
+***************
+total number of frames: 8564
+total training frames: 6981 (81.52%)
+** total testing frames: 1583 (18.48%)
+***************
+4_tim
+* category 1: 
+** total_frames= 3708
+** testing_frames= 625 (16.86%)
+* category 2: 
+** total_frames= 2449
+** testing_frames= 500 (20.42%)
+* category 3: 
+** total_frames= 2342
+** testing_frames= 419 (17.89%)
+* category 4: 
+** total_frames= 3355
+** testing_frames= 1520 (45.31%)
+* category 5: 
+** total_frames= 3297
+** testing_frames= 569 (17.26%)
+* category 6: 
+** total_frames= 4334
+** testing_frames= 651 (15.02%)
+***************
+total number of frames: 19485
+total training frames: 15201 (78.01%)
+** total testing frames: 4284 (21.99%)
+***************
+6_tim
+* category 1: 
+** total_frames= 1755
+** testing_frames= 384 (21.88%)
+* category 2: 
+** total_frames= 0
+** testing_frames= 0 (0.00%)
+* category 3: 
+** total_frames= 1065
+** testing_frames= 198 (18.59%)
+* category 4: 
+** total_frames= 1477
+** testing_frames= 255 (17.26%)
+* category 5: 
+** total_frames= 1327
+** testing_frames= 258 (19.44%)
+* category 6: 
+** total_frames= 2543
+** testing_frames= 479 (18.84%)
+***************
+total number of frames: 8167
+total training frames: 6593 (80.73%)
+** total testing frames: 1574 (19.27%)
+***************
