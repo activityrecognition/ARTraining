@@ -22,7 +22,7 @@ import PIL
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 #each group has a folder inside input_dir
-default_input_dir = os.path.join(FILE_DIR,"downloads")
+default_input_dir = os.path.join(FILE_DIR,"../videos")
 
 default_output_dir = os.path.join(FILE_DIR,"dataset")
 
