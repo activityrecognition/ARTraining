@@ -2,10 +2,11 @@
 import requests, os, sys, getopt, ast, PIL, av, numpy
 from PIL import Image
 
-# FILE_DIR = os.path.abspath(os.path.dirname(__file__))
-FILE_DIR = os.path.abspath(os.path.dirname("."))
+FILE_DIR = os.path.abspath(os.path.dirname(__file__))
+#FILE_DIR = os.path.abspath(os.path.dirname("."))
+
 defaut_work_dir = "dataset/4_tim"
-default_file_name = "thermix_1_training.txt"
+default_file_name = "thermix_1_testing.txt"
 default_output_dir = "mov"
 
 classes = ["1", "3", "4"]
@@ -40,7 +41,10 @@ def main():
 
         files[entry_class].append(entry_path)
 
+    prefix_output = fn.split('.')[0]
+
     output_dir = os.path.join(FILE_DIR, od)
+
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -48,7 +52,7 @@ def main():
         class_paths = files[c]
         class_paths = sorted(class_paths)
 
-        output_path = os.path.join(output_dir, c+".mov")
+        output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
         output = av.open(output_path, 'w')
         stream = output.add_stream("mpeg4", "10")
 
