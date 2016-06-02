@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import requests, os, sys, getopt, ast
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from tqdm import tqdm
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
 
 BASE_URL = "https://thermal.us.bramblexpress.com/api/v1/"
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
