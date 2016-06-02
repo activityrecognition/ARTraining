@@ -17,23 +17,23 @@ if [ $# -gt 2 ]; then
 rm -rf $output_dir/*
 
 #download videos of user validation
-python video_downloader.py -e v@v.com -o videos_validation
+#python video_downloader.py -e v@v.com -o ../videos_validation
 #download videos of user data_collection
-python video_downaloder.py -e d@d.com -o videos_data_collection
+python video_downloader.py -e d@d.com -o ../videos_data_collection
 #download videos of user data
-python video_downloader.py -e d@dd.com -o videos_data
+python video_downloader.py -e d@d.dd -o ../videos_data
 
-python prepare_data_for_training.py -i videos_validation -m $model_name
-python prepare_data_for_training.py -i videos_data_collection -m $model_name
-python prepare_data_for_training.py -i videos_data -m $model_name
+#python prepare_data_for_training.py -i ../videos_validation -o ../dataset -m $model_name
+python prepare_data_for_training.py -i ../videos_data_collection -o ../dataset -m $model_name
+python prepare_data_for_training.py -i ../videos_data -o ../dataset -m $model_name
 fi
 
 if [ $# -gt 1 ]; then
-python prepare_data_for_training.py -m $model_name --only_dataset | tee $output_dir/output_"$model_name".txt
+python prepare_data_for_training.py -o ../dataset -m $model_name --only_dataset | tee $output_dir/output_"$model_name".txt
 fi
 
-cd ../ccv/bin
-./image-net --train-list ../../thermix/dataset/$tim/"$model_name"_training.txt --test-list ../../thermix/dataset/$tim/"$model_name"_testing.txt --base-dir ../../thermix/dataset --working-dir ../../thermix/$output_dir/"$model_name".sqlite3 | tee ../../thermix/$output_dir/output_"$model_name".file
+cd ../../ccv/bin
+./image-net --train-list ../../thermix/dataset/$tim/"$model_name"_training.txt --test-list ../../thermix/dataset/$tim/"$model_name"_testing.txt --base-dir ../../thermix/dataset --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee ../../thermix/ARTraining/$output_dir/output_"$model_name".file
 
-cd ../../thermix
-mv dataset/$tim/"$model_name"* $output_dir
+cd ../../thermix/ARTraining
+mv ../dataset/$tim/"$model_name"* $output_dir

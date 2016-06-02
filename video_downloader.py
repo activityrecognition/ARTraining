@@ -18,7 +18,8 @@ default_password = "aaaaaa"
 #user must have access to this groups
 default_groups_to_download = []
 
-default_labels_in_groups_to_download = ["lying", "sitting", "standing", "indoor", "close up", "outdoor"]
+#default_labels_in_groups_to_download = ["lying", "sitting", "standing", "indoor", "close up", "outdoor"]
+default_labels_in_groups_to_download = ["lying", "sitting", "standing", "indoor"]
 
 #videos of each group will be divided in folders inside output_dir (one folder per group)
 default_output_dir = os.path.join(FILE_DIR,"downloads")

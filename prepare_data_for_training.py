@@ -32,7 +32,7 @@ default_model_name = "thermix_1"
 
 default_thermal_image_modes = ["4_tim"]
 
-default_labels_for_dataset = ["lying", "standing", "indoor"]
+default_labels_for_dataset = ["lying", "sitting", "standing", "indoor"]
 
 default_training_proportion = 0.85
 default_testing_proportion = 0.15

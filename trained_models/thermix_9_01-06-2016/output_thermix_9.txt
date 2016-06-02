@@ -1,0 +1,18 @@
+4_tim
+* category 1: 
+** total_frames= 1541
+** testing_frames= 332 (21.54%)
+* category 4: 
+** total_frames= 2182
+** testing_frames= 339 (15.54%)
+* category 3: 
+** total_frames= 2086
+** testing_frames= 394 (18.89%)
+* category 2: 
+** total_frames= 4421
+** testing_frames= 686 (15.52%)
+***************
+total number of frames: 10230
+total training frames: 8479 (82.88%)
+** total testing frames: 1751 (17.12%)
+***************
