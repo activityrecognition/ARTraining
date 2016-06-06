@@ -32,8 +32,7 @@ if [ $# -gt 1 ]; then
 python prepare_data_for_training.py -o ../dataset -m $model_name --only_dataset | tee $output_dir/output_"$model_name".txt
 fi
 
-cd ../../ccv/bin
-./image-net --train-list ../../thermix/dataset/$tim/"$model_name"_training.txt --test-list ../../thermix/dataset/$tim/"$model_name"_testing.txt --base-dir ../../thermix/dataset --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee ../../thermix/ARTraining/$output_dir/output_"$model_name".file
-
-cd ../../thermix/ARTraining
 mv ../dataset/$tim/"$model_name"* $output_dir
+
+cd ../../ccv/bin
+./image-net --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/dataset --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file

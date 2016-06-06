@@ -18,7 +18,7 @@ default_password = "aaaaaa"
 default_groups_to_download = []
 
 #default_labels_in_groups_to_download = ["lying", "sitting", "standing", "indoor", "close up", "outdoor"]
-default_labels_in_groups_to_download = ["lying", "sitting", "standing", "indoor"]
+default_labels_in_groups_to_download = ["lying", "sitting", "standing", "indoor","close up"]
 
 #videos of each group will be divided in folders inside output_dir (one folder per group)
 default_output_dir = os.path.join(FILE_DIR,"downloads")
@@ -89,7 +89,9 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                         break
 
                     if semantic["category"] == "thermalImageMode":
-                        thermal_image_mode = "%d_tim" % int(float(semantic["score"]))
+                        tim = int(float(semantic["score"]))
+                        tim = tim if tim != 12 else 4
+                        thermal_image_mode = "%d_tim" % tim
                         if thermal_image_mode not in thermal_image_modes:
                             avoid_video = True
 
@@ -113,6 +115,7 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                                     break
 
                 if avoid_video:
+                    print "Avoiding video with tim %s: %s" % (thermal_image_mode, url)
                     continue
 
                 if not thermal_image_mode:

@@ -5,17 +5,17 @@ from operator import itemgetter
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-defaut_work_dir = "dataset/4_tim"
-default_file_name = "thermix_1_testing.txt"
-default_output_dir = "mov"
-default_classes = ["1", "3", "4"]
-
+defaut_work_dir = "../dataset/4_tim"
+default_file_path = "trained_models/thermix_12_04-06-2016/thermix_12_testing.txt"
+default_output_dir = "trained_models/thermix_12_04-06-2016/mov"
+default_classes = ["1", "2","3", "4","5"]
+default_fps = 30
 def main():
     wd = defaut_work_dir
-    fn = default_file_name
+    fn = default_file_path
     od = default_output_dir
     classes = default_classes
-
+    fps = default_fps
     # create the files structure
     files = {}
     for c in classes:
@@ -23,7 +23,7 @@ def main():
 
     # save frames according to class
     base_dir_path = os.path.join(FILE_DIR, wd)
-    file_path = os.path.join(base_dir_path, fn)
+    file_path = fn
     print file_path
     with open(file_path, "r") as f:
         content = f.readlines()
@@ -40,7 +40,7 @@ def main():
 
         files[entry_class].append(entry_path)
 
-    prefix_output = fn.split('.')[0]
+    prefix_output = os.path.basename(fn).split('.')[0]
 
     output_dir = os.path.join(FILE_DIR, od)
 
@@ -70,7 +70,7 @@ def main():
         output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
 
         output = av.open(output_path, 'w')
-        stream = output.add_stream("mpeg4", "10")
+        stream = output.add_stream("mpeg4", "%d"%fps)
 
         img = Image.open(class_paths[0])
         stream.height = img.size[0]

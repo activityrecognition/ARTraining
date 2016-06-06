@@ -32,10 +32,10 @@ default_model_name = "thermix_1"
 
 default_thermal_image_modes = ["4_tim"]
 
-default_labels_for_dataset = ["lying", "sitting", "standing", "indoor"]
+default_labels_for_dataset = ["lying", "sitting", "standing", "indoor", "close up"]
 
-default_training_proportion = 0.85
-default_testing_proportion = 0.15
+default_training_proportion = 0.80
+default_testing_proportion = 0.20
 
 def label_for_group(group_name, labels):
     group_label = [item for item in labels if item in group_name]
@@ -252,7 +252,7 @@ def main(argv):
             only_dataset = True
 
     if only_dataset:
-        new_config.pop("input", None)
+        new_config.pop("input_dir",None)
         generate_training_and_testing_list(**new_config)
     else:
         prepare_dataset_for_training(**new_config)
