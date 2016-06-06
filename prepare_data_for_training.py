@@ -34,8 +34,8 @@ default_thermal_image_modes = ["4_tim"]
 
 default_labels_for_dataset = ["lying", "sitting", "standing", "indoor", "close up"]
 
-default_training_proportion = 0.80
-default_testing_proportion = 0.20
+default_training_proportion = 0.90
+default_testing_proportion = 1-default_training_proportion
 
 def label_for_group(group_name, labels):
     group_label = [item for item in labels if item in group_name]
@@ -116,6 +116,14 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                         #write _files.txt
                         handle.write("%s %s \n" % (category, frame_path))
 
+	prom = 0
+        cat_lens = []
+	for _,cat in file_list:
+	   cat_lens.append(sum([len(i) for i in cat]))
+	prom = sorted(cat_lens)[len(cat_lens)/2] * training_proportion
+	print "max training dataset count: %d"%prom
+	#prom /= len(file_list)
+  
         testing_frames = []
         training_frames = []
         print  thermal_folder
@@ -133,9 +141,14 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                   (cat_name, total_number_of_frames, len(cat_testing_frames),percentage)
             testing_frames.extend(cat_testing_frames)
 
+            while sum([len(i) for i in cat]) > prom:
+		mov =random.choice(cat)
+		if len(mov) > 0:
+		    mov.remove(random.choice(mov))
+
             for mov in cat:
                 training_frames.extend(mov)
-
+	    print "** training_frames= %d" %sum([len(i) for i in cat])
         random.shuffle(training_frames)
         with open(os.path.join(base_dir,"%s_training.txt" % model_name), "wb") as handle:
             for f in training_frames:

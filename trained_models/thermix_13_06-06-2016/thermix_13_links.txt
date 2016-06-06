@@ -1,0 +1,5 @@
+1 lying 
+2 sitting 
+3 standing 
+4 indoor 
+5 close up 

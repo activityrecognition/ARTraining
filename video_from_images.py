@@ -6,8 +6,8 @@ from operator import itemgetter
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 defaut_work_dir = "../dataset/4_tim"
-default_file_path = "trained_models/thermix_12_04-06-2016/thermix_12_testing.txt"
-default_output_dir = "trained_models/thermix_12_04-06-2016/mov"
+default_file_path = "trained_models/thermix_13_06-06-2016/thermix_13_training.txt"
+default_output_dir = "trained_models/thermix_13_06-06-2016/mov"
 default_classes = ["1", "2","3", "4","5"]
 default_fps = 30
 def main():
