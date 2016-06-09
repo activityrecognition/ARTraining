@@ -25,6 +25,8 @@ default_output_dir = os.path.join(FILE_DIR,"downloads")
 
 default_thermal_image_modes = ["4_tim"]
 
+default_order_by_semantic = False
+
 def login(email, password):
     if not email or not password:
         raise "remember to set 'email' and 'password' with valid user information"
@@ -83,6 +85,16 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                 url = video["entry"]["file"]["file"]
                 thermal_image_mode = None
                 avoid_video = False
+                video_semantic = video["entry"]["semantics"]["emoji"]
+
+                # UIDeviceOrientationUnknown,
+                # UIDeviceOrientationPortrait,            // Device oriented vertically, home button on the bottom
+                # UIDeviceOrientationPortraitUpsideDown,  // Device oriented vertically, home button on the top
+                # UIDeviceOrientationLandscapeLeft,       // Device oriented horizontally, home button on the right
+                # UIDeviceOrientationLandscapeRight,      // Device oriented horizontally, home button on the left
+                # UIDeviceOrientationFaceUp,              // Device oriented flat, face up
+                # UIDeviceOrientationFaceDown             // Device oriented flat, face down
+                video_orientation = "1"
                 for semantic in video["entry"]["semantics"]["results"]:
                     if semantic["category"] == "has_video" and int(float(semantic["score"])) == 0:
                         avoid_video = True
@@ -110,9 +122,12 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                                 extra_file_url = extra_file["file"]
                                 extra_file_base_url = extra_file_url.split("?")[0]
                                 if extra_file_base_url.endswith(".mov"):
-                                    video_urls.append(("14_tim", extra_file_url))
+                                    video_urls.append(("14_tim", video_semantic, video_orientation,extra_file_url))
                                     extra_videos_count += 1
                                     break
+
+                    if semantic["category"] == "videoOrientation":
+                        video_orientation = "%s" % str(semantic["score"])
 
                 if avoid_video:
                     print "Avoiding video with tim %s: %s" % (thermal_image_mode, url)
@@ -121,7 +136,7 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                 if not thermal_image_mode:
                     thermal_image_mode = "unspecified"
 
-                video_urls.append((thermal_image_mode,url))
+                video_urls.append((thermal_image_mode,video_semantic,video_orientation,url))
         else:
             return video_urls
 
@@ -129,13 +144,17 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
 
     return video_urls
 
-def download_videos_of_group(videos_urls, group_name, group_id, output_dir):
+def download_videos_of_group(videos_urls, group_name, group_id, output_dir, order_by_semantic):
     group_dir = os.path.join(output_dir, group_name)
     if not os.path.exists(group_dir):
         os.makedirs(group_dir)
 
-    for thermal_image_mode, url in videos_urls:
-        destination_dir = os.path.join(group_dir, thermal_image_mode)
+    for thermal_image_mode, semantic, orientation, url in videos_urls:
+        if order_by_semantic:
+            destination_dir = os.path.join(group_dir, semantic, orientation, thermal_image_mode)
+        else:
+            destination_dir = os.path.join(group_dir, thermal_image_mode)
+
         if not os.path.exists(destination_dir):
             os.makedirs(destination_dir)
 
@@ -157,7 +176,8 @@ def download_files_from_groups(email=default_email,
                                groups_to_download=default_groups_to_download,
                                output_dir=default_output_dir,
                                thermal_image_modes=default_thermal_image_modes,
-                               labels_in_groups_to_download=default_labels_in_groups_to_download):
+                               labels_in_groups_to_download=default_labels_in_groups_to_download,
+                               order_by_semantic=default_order_by_semantic):
     token = login(email, password)
     if not token:
         raise "email and/or password does not match a valid user"
@@ -209,7 +229,7 @@ def download_files_from_groups(email=default_email,
 
             print "urls of group %s ok" % group_name.encode('ascii', 'ignore')
 
-            download_videos_of_group(video_urls, group_name, group_id, output_dir)
+            download_videos_of_group(video_urls, group_name, group_id, output_dir, order_by_semantic)
         except Exception as e:
             print e
             print "error getting video urls of group %s" % group_name.encode('ascii', 'ignore')
@@ -221,7 +241,7 @@ def main(argv):
     new_config = {}
     try:
         opts, args = getopt.getopt(argv,"he:p:g:o:l:t:",["help","email=","password=","groups=",
-                                                         "output=","labels=","thermal_modes="])
+                                                         "output=","labels=","thermal_modes=","order_by_semantic"])
     except getopt.GetoptError:
         print """video_downloader.py -e <email> -p <password> -g '["<groupName1>","<groupName2>"]' """ + \
               """-o <outputDir> -l '["<groupName1>","<groupName2>"]' -t '["4_tim","14_tim"]'"""
@@ -243,7 +263,8 @@ def main(argv):
             new_config["labels_in_groups_to_download"] = ast.literal_eval("%s" % arg)
         elif opt in ("-t", "--thermal_modes"):
             new_config["thermal_image_modes"] = ast.literal_eval("%s" % arg)
-
+        elif opt in ("--order_by_semantic"):
+            new_config["order_by_semantic"] = True
     download_files_from_groups(**new_config)
 
 if __name__ == "__main__":
