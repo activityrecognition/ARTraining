@@ -34,7 +34,7 @@ default_thermal_image_modes = ["4_tim"]
 
 default_labels_for_dataset = ["lying", "sitting", "standing", "indoor", "close up"]
 
-default_training_proportion = 0.90
+default_training_proportion = 0.80
 default_testing_proportion = 1-default_training_proportion
 
 def label_for_group(group_name, labels):
@@ -116,12 +116,12 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                         #write _files.txt
                         handle.write("%s %s \n" % (category, frame_path))
 
-	prom = 0
+	max_dataset_len = 0
         cat_lens = []
 	for _,cat in file_list:
 	   cat_lens.append(sum([len(i) for i in cat]))
-	prom = sorted(cat_lens)[len(cat_lens)/2] * training_proportion
-	print "max training dataset count: %d"%prom
+	max_dataset_len = sorted(cat_lens)[0]
+	print "max training dataset count: %d"%max_dataset_len
 	#prom /= len(file_list)
   
         testing_frames = []
@@ -129,19 +129,19 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
         print  thermal_folder
         for cat_name,cat in file_list:
             total_number_of_frames = sum([len(i) for i in cat])
-            testing_number_of_frames = total_number_of_frames*testing_proportion
+            testing_number_of_frames = max_dataset_len*testing_proportion
             cat_testing_frames = []
             while len(cat_testing_frames) < testing_number_of_frames:
                 mov = random.choice(cat)
                 cat.remove(mov)
                 cat_testing_frames.extend(mov)
 
-            percentage = len(cat_testing_frames)/float(total_number_of_frames)*100 if total_number_of_frames > 0 else 0
+            percentage = len(cat_testing_frames)/float(max_dataset_len)*100
             print "* category %s: \n** total_frames= %d\n** testing_frames= %d (%.2f%%)" % \
                   (cat_name, total_number_of_frames, len(cat_testing_frames),percentage)
             testing_frames.extend(cat_testing_frames)
 
-            while sum([len(i) for i in cat]) > prom:
+            while sum([len(i) for i in cat]) > max_dataset_len*training_proportion:
 		mov =random.choice(cat)
 		if len(mov) > 0:
 		    mov.remove(random.choice(mov))
