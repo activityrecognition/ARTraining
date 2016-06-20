@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import requests, os, sys, getopt, ast, PIL, av, numpy
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 from operator import itemgetter
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 defaut_work_dir = "../dataset/4_tim"
-default_file_path = "trained_models/thermix_13_06-06-2016/thermix_13_training.txt"
-default_output_dir = "trained_models/thermix_13_06-06-2016/mov"
+default_file_path = "trained_models/thermix_19_07-06-2016/thermix_19_files.txt"
+default_output_dir = "trained_models/thermix_19_07-06-2016/mov"
 default_classes = ["1", "2","3", "4","5"]
 default_fps = 30
 def main():
@@ -73,11 +73,17 @@ def main():
         stream = output.add_stream("mpeg4", "%d"%fps)
 
         img = Image.open(class_paths[0])
+
         stream.height = img.size[0]
         stream.width = img.size[1]
 
         for path in class_paths:
             img = Image.open(path)
+
+            draw = ImageDraw.Draw(img)
+            font = ImageFont.truetype("SF-UI-Text-Medium.otf", 16)
+            draw.text((10, 75),"THERMIX",(255,255,255),font=font)
+
             img_matrix = numpy.asarray(img)#.reshape(img.size[0], img.size[1], 3)
             frame = av.VideoFrame.from_ndarray(img_matrix)
             packet = stream.encode(frame)
