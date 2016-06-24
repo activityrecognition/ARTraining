@@ -40,9 +40,18 @@ mv $dataset_dir/$tim/"$model_name"* $output_dir
 cd ../../ccv/bin
 #sudo ./image-net --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
 sudo ./step1 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
-sudo ./step2 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
-sudo ./step3 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
 
+cd ../../thermix/ARTraining
+output_filepath=./$output_dir/output_"$model_name".file runipy plot_ccv_thermix.ipynb
+cd ../../ccv/bin
+
+sudo ./step2 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
+
+cd ../../thermix/ARTraining
+output_filepath=./$output_dir/output_"$model_name".file runipy plot_ccv_thermix.ipynb
+cd ../../ccv/bin
+
+sudo ./step3 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
 
 cd ../../thermix/ARTraining
 output_filepath=./$output_dir/output_"$model_name".file runipy plot_ccv_thermix.ipynb
