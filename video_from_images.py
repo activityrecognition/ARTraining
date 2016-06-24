@@ -98,7 +98,7 @@ def make_video(wd=defaut_work_dir,
                     name_of_video = os.path.basename(os.path.dirname(path))
 
                     # str_date_of_video = 2016-06-20T18%3A46%3A22
-                    str_date_of_video = os.path.splitext(name_of_video).split("_")[:-2].join("T")
+                    str_date_of_video = "T".join(os.path.splitext(name_of_video)[0].split("_")[-2:])
 
                     # date_of_video = datetime(2016-06-20 18:46:22)
                     date_of_video = datetime.strptime(str_date_of_video,"%Y-%m-%dT%H%%3A%M%%3A%S")
@@ -108,6 +108,7 @@ def make_video(wd=defaut_work_dir,
 
 
                     font = ImageFont.truetype("SF-UI-Text-Medium.otf", 14)
+                    draw = ImageDraw.Draw(img)
                     draw.text((10, 200),date_of_video.strftime("%H:%M"),(255,255,255),font=font)
 
                 img_matrix = numpy.asarray(img)#.reshape(img.size[0], img.size[1], 3)
