@@ -26,7 +26,7 @@ default_input_dir = os.path.join(FILE_DIR,"../videos")
 
 default_output_dir = os.path.join(FILE_DIR,"dataset")
 
-default_labels = ["people", "background"]
+default_labels = ["people", "background", "group"]
 
 default_model_name = "thermix_1"
 
