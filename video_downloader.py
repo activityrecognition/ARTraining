@@ -107,7 +107,7 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                         if thermal_image_mode not in thermal_image_modes:
                             avoid_video = True
 
-                    if semantic["category"] == "includeRgb":
+                    if semantic["category"] == "includeThermalData":
                         if "14_tim" not in thermal_image_modes:
                             continue
 
@@ -121,10 +121,10 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                             for extra_file in extra_files["extra_files"]:
                                 extra_file_url = extra_file["file"]
                                 extra_file_base_url = extra_file_url.split("?")[0]
-                                if extra_file_base_url.endswith(".mov"):
+                                if extra_file_base_url.endswith("_1.mov"):
                                     video_urls.append(("14_tim", video_semantic, video_orientation,extra_file_url))
                                     extra_videos_count += 1
-                                    break
+                                    #break
 
                     if semantic["category"] == "videoOrientation":
                         video_orientation = "%s" % str(semantic["score"])

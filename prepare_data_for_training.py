@@ -26,13 +26,13 @@ default_input_dir = os.path.join(FILE_DIR,"../videos")
 
 default_output_dir = os.path.join(FILE_DIR,"dataset")
 
-default_labels = ["lying", "sitting", "standing", "indoor", "close up", "outdoor"]
+default_labels = ["people", "background"]
 
 default_model_name = "thermix_1"
 
 default_thermal_image_modes = ["4_tim"]
 
-default_labels_for_dataset = ["lying", "sitting", "standing", "indoor"]
+default_labels_for_dataset = ["people", "background"]
 
 default_training_proportion = 0.80
 default_testing_proportion = 1-default_training_proportion
@@ -49,19 +49,28 @@ def create_dataset_folders(dataset_dir, all_labels, dataset_labels):
         if not os.path.exists(path_for_label):
             os.makedirs(path_for_label)
 
-def save_frames_of_video(video_path):
+def save_frames_of_video(video_path, one_image_per_channel=False):
     try:
         container = av.open(video_path)
         video = next(s for s in container.streams if s.type == b'video')
 
         for packet in container.demux(video):
             for frame in packet.decode():
-                frame_path = os.path.join(os.path.dirname(video_path),'%d.png' % frame.index)
-                if os.path.exists(frame_path):
-                    return
                 img = frame.to_image()
                 img = img.resize((257, 257))
-                img.save(frame_path)
+                if one_image_per_channel:
+                    rgb = img.split()
+                    for i,channel in enumerate(rgb):
+                        frame_path = os.path.join(os.path.dirname(video_path),'%d_%d.png' % (frame.index,i))
+                        if os.path.exists(frame_path):
+                            return
+                        img2 = PIL.Image.merge("RGB", (channel, channel, channel))
+                        img2.save(frame_path)
+                else:
+                    frame_path = os.path.join(os.path.dirname(video_path),'%d.png' % frame.index)
+                    if os.path.exists(frame_path):
+                        return
+                    img.save(frame_path)
     except Exception as e:
         print "Error getting frames of video %s" % video_path
 
@@ -179,7 +188,8 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                                  training_proportion=default_training_proportion,
                                  testing_proportion=default_testing_proportion,
                                  thermal_image_modes=default_thermal_image_modes,
-                                 labels_for_dataset=default_labels_for_dataset):
+                                 labels_for_dataset=default_labels_for_dataset, 
+                                 remove_movement=False):
     if len(labels_for_dataset) == 0:
         raise "At least one label is required"
 
@@ -227,7 +237,7 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                 src = os.path.join(thermal_path,file)
                 dest = os.path.join(destination_dir, file)
                 shutil.copyfile(src, dest)
-                save_frames_of_video(dest)
+                save_frames_of_video(dest, remove_movement)
                 os.remove(dest)
 
     generate_training_and_testing_list(output_dir, model_name, training_proportion, testing_proportion,
@@ -238,15 +248,15 @@ def main(argv):
     only_dataset = False
     try:
         opts, args = getopt.getopt(argv,"hi:o:l:m:p:t:",["help","input=","output=","labels=","model_name=",
-                                                         "testing_proportion=","only_dataset", "thermal_modes="])
+                                                         "testing_proportion=","only_dataset", "thermal_modes=", "remove_movement"])
     except getopt.GetoptError:
         print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
-              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --only_dataset"""
+              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset"""
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', "--help"):
             print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
-              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --only_dataset"""
+              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset"""
             sys.exit()
         elif opt in ("-o", "--output"):
             new_config["output_dir"] = arg
@@ -261,10 +271,13 @@ def main(argv):
             new_config["labels_for_dataset"] = ast.literal_eval("%s" % arg)
         elif opt in ("-t", "--thermal_modes"):
             new_config["thermal_image_modes"] = ast.literal_eval("%s" % arg)
+        elif opt in ("--remove_movement"):
+            new_config["remove_movement"] = True
         elif opt in ("--only_dataset"):
             only_dataset = True
 
     if only_dataset:
+        new_config.pop("remove_movement",False)
         new_config.pop("input_dir",None)
         generate_training_and_testing_list(**new_config)
     else:

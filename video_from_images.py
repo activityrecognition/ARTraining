@@ -5,10 +5,10 @@ from operator import itemgetter
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-defaut_work_dir = "../dataset/4_tim"
-default_file_path = "trained_models/thermix_19_07-06-2016/thermix_19_files.txt"
-default_output_dir = "trained_models/thermix_19_07-06-2016/mov"
-default_classes = ["1", "2","3", "4","5"]
+defaut_work_dir = "../dataset_thermalRaw_no_movement/14_tim"
+default_file_path = "trained_models/thermix_28a/thermix_28a_files.txt"
+default_output_dir = "trained_models/thermix_28a/mov"
+default_classes = ["1", "2"]
 default_fps = 30
 def main():
     wd = defaut_work_dir
@@ -57,13 +57,13 @@ def main():
             if not videos_path.get(os.path.dirname(file), None):
                 videos_path[os.path.dirname(file)] = []
             name, extension = os.path.basename(file).split(".")
-            videos_path[os.path.dirname(file)].append((int(name), extension))
+            videos_path[os.path.dirname(file)].append((int(name.replace("_","")), name, extension))
 
         class_paths = []
         for video in videos_path.keys():
             video_frames = sorted(videos_path[video], key=itemgetter(0))
             for v in video_frames:
-                class_paths.append(os.path.join(video, "%d.%s" % v))
+                class_paths.append(os.path.join(video, "%s.%s" % v[1:]))
         # END Sort
 
         # make video for class
