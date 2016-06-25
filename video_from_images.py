@@ -6,11 +6,11 @@ from datetime import datetime, timedelta
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-defaut_work_dir = "../dataset_thermalRaw_no_movement"
+defaut_work_dir = "./trained_models/thermix_28b/classification_output"
 default_thermal_mode = "4_tim"
-default_file_paths = ["trained_models/thermix_28a/thermix_28a_files.txt"]
-default_output_dir = "trained_models/thermix_28a/mov"
-default_classes = ["1", "2"]
+default_file_paths = ["trained_models/thermix_28b/classification_output/4_tim/thermix_1_files.txt"]
+default_output_dir = "../mov_suenos_doradosssss"
+default_classes = ["3"]
 default_fps = 30
 default_text_to_draw = None
 default_add_date = False
@@ -110,6 +110,9 @@ def make_video(wd=defaut_work_dir,
                     font = ImageFont.truetype("SF-UI-Text-Medium.otf", 14)
                     draw = ImageDraw.Draw(img)
                     draw.text((10, 200),date_of_video.strftime("%H:%M"),(255,255,255),font=font)
+            
+                if img.mode != "RGB":
+                    img=img.convert("RGB")
 
                 img_matrix = numpy.asarray(img)#.reshape(img.size[0], img.size[1], 3)
                 frame = av.VideoFrame.from_ndarray(img_matrix)
