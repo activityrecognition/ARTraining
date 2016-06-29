@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #model's name
-model_name=thermix_28b
+model_name=thermix_30a
 
 dataset_base_dir=/media/Gui2/thermix/suenos_dorados_day
 tim=14_tim

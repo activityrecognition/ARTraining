@@ -88,6 +88,9 @@ def make_video(wd=defaut_work_dir,
             for path in class_paths:
                 img = Image.open(path)
 
+                if img.mode != "RGB":
+                    img=img.convert("RGB")
+
                 if text_to_draw:
                     draw = ImageDraw.Draw(img)
                     font = ImageFont.truetype("SF-UI-Text-Medium.otf", 16)
@@ -96,7 +99,7 @@ def make_video(wd=defaut_work_dir,
                 if add_date:
                     # name_of_video = "Users_thermaldata_unkown_2016-06-20_18%3A46%3A22.000000_2"
                     name_of_video = os.path.basename(os.path.dirname(path))
-
+		    
                     # str_date_of_video = 2016-06-20T18%3A46%3A22
                     str_date_of_video = "T".join(os.path.splitext(name_of_video)[0].split("_")[-2:])
 
@@ -105,15 +108,11 @@ def make_video(wd=defaut_work_dir,
 
                     #convert to argentinian date
                     date_of_video -= timedelta(hours=3)
-
-
-                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 14)
+                    
+                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 12)
                     draw = ImageDraw.Draw(img)
-                    draw.text((10, 200),date_of_video.strftime("%H:%M"),(255,255,255),font=font)
+                    draw.text((10, 200),date_of_video.strftime("%Y-%m-%d %H:%M"),(255,255,255),font=font)
             
-                if img.mode != "RGB":
-                    img=img.convert("RGB")
-
                 img_matrix = numpy.asarray(img)#.reshape(img.size[0], img.size[1], 3)
                 frame = av.VideoFrame.from_ndarray(img_matrix)
                 packet = stream.encode(frame)
