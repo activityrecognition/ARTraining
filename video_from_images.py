@@ -4,14 +4,21 @@ from PIL import Image, ImageFont, ImageDraw
 from operator import itemgetter
 from datetime import datetime, timedelta
 
+import requests, os, sys, getopt, ast, PIL, av, numpy
+from os import listdir
+from os.path import isfile, join
+import subprocess
+
+import shutil
+
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 defaut_work_dir = "./trained_models/thermix_28b/classification_output"
-default_thermal_mode = "4_tim"
+default_thermal_mode = "14_tim"
 default_file_paths = ["trained_models/thermix_28b/classification_output/4_tim/thermix_1_files.txt"]
-default_output_dir = "../mov_suenos_doradosssss"
+default_output_dir = "../mov_suenos_dorados"
 default_classes = ["3"]
-default_fps = 30
+default_fps = 60
 default_text_to_draw = None
 default_add_date = False
 
@@ -45,7 +52,6 @@ def make_video(wd=defaut_work_dir,
             parent_dir_path = os.path.dirname(base_dir_path)
 
             entry_path = os.path.join(parent_dir_path, entry_path)
-
             files[entry_class].append(entry_path)
 
         prefix_output = os.path.basename(filepath).split('.')[0]
@@ -75,17 +81,19 @@ def make_video(wd=defaut_work_dir,
             # END Sort
 
             # make video for class
-            output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
+            output_path = os.path.join(output_dir, prefix_output+"_"+c+".mp4")
 
-            output = av.open(output_path, 'w')
-            stream = output.add_stream("mpeg4", "%d"%fps)
+            #create directory where to save edited images
+            temp_path = os.path.join(os.getcwd(),'tmp/')
+            if os.path.exists(temp_path):
+                shutil.rmtree(temp_path)
+            os.makedirs(temp_path)
 
-            img = Image.open(class_paths[0])
-
-            stream.height = img.size[0]
-            stream.width = img.size[1]
-
+            i = 0
             for path in class_paths:
+                if not path.endswith('.png'):
+                    continue
+
                 img = Image.open(path)
 
                 if img.mode != "RGB":
@@ -99,7 +107,7 @@ def make_video(wd=defaut_work_dir,
                 if add_date:
                     # name_of_video = "Users_thermaldata_unkown_2016-06-20_18%3A46%3A22.000000_2"
                     name_of_video = os.path.basename(os.path.dirname(path))
-		    
+
                     # str_date_of_video = 2016-06-20T18%3A46%3A22
                     str_date_of_video = "T".join(os.path.splitext(name_of_video)[0].split("_")[-2:])
 
@@ -112,14 +120,16 @@ def make_video(wd=defaut_work_dir,
                     font = ImageFont.truetype("SF-UI-Text-Medium.otf", 12)
                     draw = ImageDraw.Draw(img)
                     draw.text((10, 200),date_of_video.strftime("%Y-%m-%d %H:%M"),(255,255,255),font=font)
-            
-                img_matrix = numpy.asarray(img)#.reshape(img.size[0], img.size[1], 3)
-                frame = av.VideoFrame.from_ndarray(img_matrix)
-                packet = stream.encode(frame)
-                output.mux(packet)
 
-            output.close()
+                print "saved image %d" %i
+                img.save('./tmp/img%020d.png' %i, 'png', quality=100)
+                i = i+1
 
+            print "finished composing images for ffmpeg"
+            os.system("ffmpeg -framerate 60 -pattern_type glob -i 'tmp/*.png' -c:v libx264 %s" %output_path)
+            shutil.rmtree(os.path.join(temp_path))
+            print "done. video at %s" %output_path
+    
 def main(argv):
     new_config = {}
     try:

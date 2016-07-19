@@ -27,6 +27,8 @@ default_thermal_image_modes = ["4_tim"]
 
 default_order_by_semantic = False
 
+default_incremental_download = False
+
 def login(email, password):
     if not email or not password:
         raise "remember to set 'email' and 'password' with valid user information"
@@ -67,12 +69,34 @@ def get_groups_of_user_with_token(token):
 
     return groups
 
-def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
+def is_video_on_disk(output_dir, group_name, order_by_semantic, semantic, orientation, thermal_image_mode, url):
+    group_dir = os.path.join(output_dir, group_name)
+    if not os.path.exists(group_dir):
+        return False
+
+    if order_by_semantic:
+        destination_dir = os.path.join(group_dir, semantic, orientation, thermal_image_mode)
+    else:
+        destination_dir = os.path.join(group_dir, thermal_image_mode)
+        
+    filename = url.split("?")[0].replace("/","_").split("_",3)[-1]
+
+    filepath = os.path.join(destination_dir,filename)
+    if os.path.exists(filepath):
+        return True
+    
+    return False
+
+def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes, 
+                                    incremental=False, output_dir=None, group_name=None, 
+                                    order_by_semantic=None):
     total_number_of_videos = 1
     page_number = 1
     video_urls = []
     extra_videos_count = 0
-    while len(video_urls) < total_number_of_videos+extra_videos_count:
+    finish_incremental = False
+    while len(video_urls) < total_number_of_videos+extra_videos_count and \
+          (not incremental or not finish_incremental):
         data=requests.get('%schats/verzus/%d/videos/' % (BASE_URL, group_id),
                           verify=False,
                           params={"page":page_number},
@@ -122,9 +146,28 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                                 extra_file_url = extra_file["file"]
                                 extra_file_base_url = extra_file_url.split("?")[0]
                                 if extra_file_base_url.endswith("_1.mov"):
-                                    video_urls.append(("14_tim", video_semantic, video_orientation,extra_file_url))
-                                    extra_videos_count += 1
-                                    #break
+                                    exist_2 = False
+                                    for extra_file2 in extra_files["extra_files"]:
+                                        extra_file_url2 = extra_file2["file"]
+                                        extra_file_base_url2 = extra_file_url2.split("?")[0]
+                                        if extra_file_base_url2.endswith("_2.mov"):
+                                            exist_2 = True
+                                            video_urls.append(("14_tim", video_semantic, video_orientation,extra_file_url2))
+                                            if incremental and is_video_on_disk(output_dir, group_name, order_by_semantic, 
+                                                                                video_semantic, video_orientation, "14_tim", 
+                                                                                extra_file_url2):
+                                                finish_incremental=True
+                                                
+                                            extra_videos_count += 1  
+                                            break
+                                    if not exist_2:
+                                        video_urls.append(("14_tim", video_semantic, video_orientation,extra_file_url))
+                                        if incremental and is_video_on_disk(output_dir, group_name, order_by_semantic, 
+                                                                            video_semantic, video_orientation, "14_tim", 
+                                                                            extra_file_url):
+                                                finish_incremental=True
+                                        extra_videos_count += 1
+                                        break
 
                     if semantic["category"] == "videoOrientation":
                         video_orientation = "%s" % str(semantic["score"])
@@ -137,11 +180,16 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes):
                     thermal_image_mode = "unspecified"
 
                 video_urls.append((thermal_image_mode,video_semantic,video_orientation,url))
+                if incremental and is_video_on_disk(output_dir, group_name, order_by_semantic, 
+                                                    video_semantic, video_orientation, thermal_image_mode, 
+                                                    url):
+                    finish_incremental=True
         else:
             return video_urls
 
         page_number = page_number+1
 
+    video_urls.reverse()
     return video_urls
 
 def download_videos_of_group(videos_urls, group_name, group_id, output_dir, order_by_semantic):
@@ -177,7 +225,8 @@ def download_files_from_groups(email=default_email,
                                output_dir=default_output_dir,
                                thermal_image_modes=default_thermal_image_modes,
                                labels_in_groups_to_download=default_labels_in_groups_to_download,
-                               order_by_semantic=default_order_by_semantic):
+                               order_by_semantic=default_order_by_semantic,
+                               incremental_download=default_incremental_download):
     token = login(email, password)
     if not token:
         raise "email and/or password does not match a valid user"
@@ -223,7 +272,8 @@ def download_files_from_groups(email=default_email,
 
     for group_name, group_id in groups_tuples:
         try:
-            video_urls = get_video_urls_of_group_with_id(group_id, token, thermal_image_modes)
+            video_urls = get_video_urls_of_group_with_id(group_id, token, thermal_image_modes, 
+                                                         incremental_download, output_dir, group_name, order_by_semantic)
             if not video_urls:
                 raise "error getting video urls of group %s" % group_name
 
@@ -241,15 +291,16 @@ def main(argv):
     new_config = {}
     try:
         opts, args = getopt.getopt(argv,"he:p:g:o:l:t:",["help","email=","password=","groups=",
-                                                         "output=","labels=","thermal_modes=","order_by_semantic"])
+                                                         "output=","labels=","thermal_modes=","order_by_semantic", 
+                                                         "incremental"])
     except getopt.GetoptError:
         print """video_downloader.py -e <email> -p <password> -g '["<groupName1>","<groupName2>"]' """ + \
-              """-o <outputDir> -l '["<groupName1>","<groupName2>"]' -t '["4_tim","14_tim"]'"""
+              """-o <outputDir> -l '["<groupName1>","<groupName2>"]' -t '["4_tim","14_tim"]' --incremental"""
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', "--help"):
             print """video_downloader.py -e <email> -p <password> -g '["<groupName1>","<groupName2>"]' """ + \
-                  """-o <outputDir> -l '["<groupName1>","<groupName2>"]' -t '["4_tim","14_tim"]'"""
+                  """-o <outputDir> -l '["<groupName1>","<groupName2>"]' -t '["4_tim","14_tim"]' --incremental"""
             sys.exit()
         elif opt in ("-e", "--email"):
             new_config["email"] = arg
@@ -265,6 +316,9 @@ def main(argv):
             new_config["thermal_image_modes"] = ast.literal_eval("%s" % arg)
         elif opt in ("--order_by_semantic"):
             new_config["order_by_semantic"] = True
+        elif opt in ("--incremental"):
+            new_config["incremental_download"] = True
+            
     download_files_from_groups(**new_config)
 
 if __name__ == "__main__":

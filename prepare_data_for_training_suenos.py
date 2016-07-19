@@ -26,7 +26,7 @@ default_input_dir = os.path.join(FILE_DIR,"../videos")
 
 default_output_dir = os.path.join(FILE_DIR,"dataset")
 
-default_labels = ["people", "background", "suenos"]
+default_labels = ["people", "background", "dorados_5"]
 
 default_model_name = "thermix_1"
 
@@ -71,8 +71,12 @@ def save_frames_of_video(video_path, one_image_per_channel=False):
                     if os.path.exists(frame_path):
                         return
                     img.save(frame_path)
+                    
+        return True
     except Exception as e:
+        print e
         print "Error getting frames of video %s" % video_path
+        return False
 
 def generate_training_and_testing_list(output_dir=default_output_dir,
                                        model_name=default_model_name,

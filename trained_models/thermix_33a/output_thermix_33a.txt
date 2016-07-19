@@ -1,0 +1,19 @@
+max training dataset count: 3123
+14_tim
+* category 1: 
+** total_frames= 3123
+** testing_frames= 627 (20.08%)
+** training_frames= 2496
+* category 3: 
+** total_frames= 3162
+** testing_frames= 633 (20.27%)
+** training_frames= 2498
+* category 2: 
+** total_frames= 3129
+** testing_frames= 639 (20.46%)
+** training_frames= 2490
+***************
+total number of frames: 9383
+total training frames: 7484 (79.76%)
+** total testing frames: 1899 (20.24%)
+***************

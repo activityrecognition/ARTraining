@@ -24,15 +24,15 @@ FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 #each group has a folder inside input_dir
 default_input_dir = os.path.join(FILE_DIR,"../videos")
 
-default_output_dir = os.path.join(FILE_DIR,"dataset")
+default_output_dir = os.path.join(FILE_DIR,"../dataset_thermalRaw_no_movement_2")
 
-default_labels = ["people", "background", "group"]
+default_labels = ["person", "background", "people"]
 
 default_model_name = "thermix_1"
 
-default_thermal_image_modes = ["4_tim"]
+default_thermal_image_modes = ["14_tim"]
 
-default_labels_for_dataset = ["people", "background", "group"]
+default_labels_for_dataset = ["person", "background", "people"]
 
 default_training_proportion = 0.80
 default_testing_proportion = 1-default_training_proportion
@@ -248,7 +248,8 @@ def main(argv):
     only_dataset = False
     try:
         opts, args = getopt.getopt(argv,"hi:o:l:m:p:t:",["help","input=","output=","labels=","model_name=",
-                                                         "testing_proportion=","only_dataset", "thermal_modes=", "remove_movement"])
+                                                         "testing_proportion=","only_dataset", "thermal_modes=",
+                                                         "remove_movement", "all_labels="])
     except getopt.GetoptError:
         print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
               """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset"""
@@ -275,7 +276,9 @@ def main(argv):
             new_config["remove_movement"] = True
         elif opt in ("--only_dataset"):
             only_dataset = True
-
+        elif opt in ("--all_labels"):
+            new_config["all_labels"] = ast.literal_eval("%s" % arg)
+            
     if only_dataset:
         new_config.pop("remove_movement",False)
         new_config.pop("input_dir",None)
