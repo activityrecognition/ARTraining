@@ -133,7 +133,7 @@ def make_video(wd=defaut_work_dir,
             output_paths=[]
             #outputs=[]
             #streams=[]
-            img = Image.open(class_paths[0])
+            #img = Image.open(class_paths[0])
             if split_in_days:
                 for day_video in range(0, len(days_ranges)):  
                     output_path = os.path.join(output_dir, prefix_output+"_"+c+"_day_%03d"%(day_video+1)+".mp4")
@@ -200,32 +200,37 @@ def make_video(wd=defaut_work_dir,
                         if index_of_day == len(days_ranges):
                             break
 
-                img = Image.open(path)
+                #img = Image.open(path)
 
-                if img.mode != "RGB":
-                    img=img.convert("RGB")
+                #if img.mode != "RGB":
+                #    img=img.convert("RGB")
 
-                if text_to_draw:
-                    draw = ImageDraw.Draw(img)
-                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 16)
-                    draw.text((10, 75),text_to_draw,(255,255,255),font=font)
+                #if text_to_draw:
+                #    draw = ImageDraw.Draw(img)
+                #    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 16)
+                #    draw.text((10, 75),text_to_draw,(255,255,255),font=font)
 
-                if add_date:
-                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 12)
-                    draw = ImageDraw.Draw(img)
-                    draw.text((10, 200),date_of_video.strftime("%Y-%m-%d %H:%M"),(255,255,255),font=font)
+                #if add_date:
+                #    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 12)
+                #    draw = ImageDraw.Draw(img)
+                #    draw.text((10, 200),date_of_video.strftime("%Y-%m-%d %H:%M"),(255,255,255),font=font)
 
                 if not pending_frames_for_video:
                     temp_dir = create_temp_dir_for_video(output_paths[index_of_day])
                     pending_frames_for_video = True
                 
-                img.save(os.path.join(temp_dir, 'img%020d.png'%i), 'png')
+                os.system("ln -s %s %s"%(path,os.path.join(temp_dir, 'img%020d.png'%i)))
+                #img.save(os.path.join(temp_dir, 'img%020d.png'%i), 'png')
                 i = i+1
                 #img_matrix = numpy.asarray(img)#.reshape(img.size[0], img.size[1], 3)
                 #frame = av.VideoFrame.from_ndarray(img_matrix)
                 #packet = streams[index_of_day].encode(frame)
                 #outputs[index_of_day].mux(packet)
 
+            if pending_frames_for_video:
+                create_video_with_frames_in_path(temp_dir, fps, output_paths[index_of_day])
+                temp_dir = None
+                pending_frames_for_video = False
             #if split_in_days:
             #    for day_video in range(0, len(days_ranges)):  
             #        if outputs[day_video]:

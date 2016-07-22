@@ -87,6 +87,7 @@ words_dir=$model_folder/"$model_name"._words \
 results=$model_results_file \
 stretch_image=$stretch_frames \
 add_date=$add_date \
+skip_if_file_exists=true \
 runipy draw_cnn_on_images.ipynb
 fi
 
@@ -147,10 +148,11 @@ if [ $make_poses_video = true ]; then
       results=$poses_model_results_file \
       stretch_image=$stretch_frames \
       add_date=$add_date \
+      skip_if_file_exists=true \
       runipy draw_cnn_on_images.ipynb
-
-      python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $labeled_frames_path -m thermix_1 --only_dataset
   fi
+  
+  python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $labeled_frames_path -m thermix_1 --only_dataset
   
   if [ ! -d ../mov_"$thermix_group"_"$poses_model_name" ]; then
       python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t 14_tim -o ../mov_"$thermix_group"_"$poses_model_name" -f '["'"$labeled_frames_path"'/14_tim/thermix_1_files.txt"]' --split_in_days

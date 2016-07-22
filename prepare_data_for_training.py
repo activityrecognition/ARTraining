@@ -18,6 +18,8 @@
 ###pip install av
 import os, getopt, sys, shutil, av, ast, random
 import PIL
+from operator import itemgetter
+from datetime import datetime, timedelta
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,6 +38,9 @@ default_labels_for_dataset = ["person", "background", "people"]
 
 default_training_proportion = 0.80
 default_testing_proportion = 1-default_training_proportion
+
+#day zero means day functionality off
+default_specific_day=0
 
 def label_for_group(group_name, labels):
     group_label = [item for item in labels if item in group_name]
@@ -80,7 +85,8 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                                        testing_proportion=default_testing_proportion,
                                        thermal_image_modes=default_thermal_image_modes,
                                        all_labels=default_labels,
-                                       labels_for_dataset=default_labels_for_dataset):
+                                       labels_for_dataset=default_labels_for_dataset,
+                                       specific_day=default_specific_day):
     list_of_thermal_folders = os.listdir(output_dir)
 
     for thermal_folder in list_of_thermal_folders:
@@ -110,6 +116,29 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                 cat = []
                 file_list.append((category,cat))
                 category_videos = os.listdir(category_dir)
+                
+                oldest_video_date = None
+                if specific_day > 0:
+                    dates_and_videos = []
+                    for video in category_videos:
+                        try:
+                            # str_date_of_video = 2016-06-20T18%3A46%3A22
+                            str_date_of_video = "T".join(os.path.splitext(video)[0].split("_")[-2:])
+
+                            # date_of_video = datetime(2016-06-20 18:46:22)
+                            date_of_video = datetime.strptime(str_date_of_video,"%Y-%m-%dT%H%%3A%M%%3A%S")
+
+                            #convert to argentinian date
+                            date_of_video -= timedelta(hours=3)
+                        
+                            dates_and_videos.append((date_of_video, video))
+                        except Exception as e:
+                            print "Error getting date from video named: %s.\n%s" %(video, str(e))
+                    dates_and_videos = sorted(dates_and_videos, key=itemgetter(0))    
+                    from_date = dates_and_videos[0][0]+timedelta(hours=24*(specific_day-1))
+                    to_date = dates_and_videos[0][0]+timedelta(hours=24*specific_day)
+                    category_videos = [v for d,v in dates_and_videos if d >= from_date and d < to_date]
+                        
                 for video in category_videos:
                     video_dir = os.path.join(category_dir, video)
                     if not os.path.isdir(video_dir):
@@ -189,7 +218,8 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                                  testing_proportion=default_testing_proportion,
                                  thermal_image_modes=default_thermal_image_modes,
                                  labels_for_dataset=default_labels_for_dataset, 
-                                 remove_movement=False):
+                                 remove_movement=False,
+                                 specific_day=default_specific_day):
     if len(labels_for_dataset) == 0:
         raise "At least one label is required"
 
@@ -241,7 +271,7 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                 os.remove(dest)
 
     generate_training_and_testing_list(output_dir, model_name, training_proportion, testing_proportion,
-                                       thermal_image_modes, all_labels, labels_for_dataset)
+                                       thermal_image_modes, all_labels, labels_for_dataset, specific_day)
 
 def main(argv):
     new_config = {}
@@ -249,7 +279,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"hi:o:l:m:p:t:",["help","input=","output=","labels=","model_name=",
                                                          "testing_proportion=","only_dataset", "thermal_modes=",
-                                                         "remove_movement", "all_labels="])
+                                                         "remove_movement", "all_labels=", "day="])
     except getopt.GetoptError:
         print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
               """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset"""
@@ -278,7 +308,8 @@ def main(argv):
             only_dataset = True
         elif opt in ("--all_labels"):
             new_config["all_labels"] = ast.literal_eval("%s" % arg)
-            
+        elif opt in ("--day"):
+            new_config["specific_day"] = int(arg)
     if only_dataset:
         new_config.pop("remove_movement",False)
         new_config.pop("input_dir",None)

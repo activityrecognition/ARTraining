@@ -1,13 +1,8 @@
 #!/usr/bin/env python
-import requests, os, sys, getopt, ast, PIL, av, numpy
+import requests, os, sys, getopt, ast, PIL, av, numpy as np
 from PIL import Image, ImageFont, ImageDraw
 from operator import itemgetter
 from datetime import datetime, timedelta
-
-import requests, os, sys, getopt, ast, PIL, av, numpy
-from os import listdir
-from os.path import isfile, join
-import subprocess
 
 import shutil
 
@@ -21,6 +16,50 @@ default_classes = ["3"]
 default_fps = 60
 default_text_to_draw = None
 default_add_date = False
+default_add_frame_id = False
+default_stretch_frames = False
+
+def imhist(im):
+    m, n = im.shape
+    h = [0.0] * 256
+    for i in range(m):
+        for j in range(n):
+            h[im[i, j]]+=1
+    return np.array(h)/(m*n)
+
+def cumsum(h):
+    # finds cumulative sum of a numpy array, list
+    return [sum(h[:i+1]) for i in range(len(h))]
+
+def histeq(im):
+    #calculate Histogram
+    h = imhist(im)
+    cdf = np.array(cumsum(h)) #cumulative distribution function
+    sk = np.uint8(255 * cdf) #finding transfer function values
+    s1, s2 = im.shape
+    Y = np.zeros_like(im)
+    # applying transfered values for each pixels
+    for i in range(0, s1):
+        for j in range(0, s2):
+            Y[i, j] = sk[im[i, j]]
+    H = imhist(Y)
+    #return transformed image, original and new istogram, 
+    # and transform function
+    return Y , h, H, sk
+
+def hist_stretching(im_asarray):
+    mi = im_asarray.min()
+    ma = im_asarray.max()
+    gap = 255 / (ma - mi)
+    
+    Y = np.zeros_like(im_asarray)
+    s1, s2 = im_asarray.shape
+
+    for i in range(0, s1):
+        for j in range(0, s2):
+            Y[i, j] = (im_asarray[i, j] - mi) * gap
+    
+    return Y
 
 def make_video(wd=defaut_work_dir,
                tm=default_thermal_mode,
@@ -29,7 +68,9 @@ def make_video(wd=defaut_work_dir,
                classes= default_classes,
                fps=default_fps,
                text_to_draw=default_text_to_draw,
-               add_date=default_add_date):
+               add_date=default_add_date,
+               add_frame_id=default_add_frame_id,
+               stretch_frames=default_stretch_frames):
 
     # create the files structure
     files = {}
@@ -81,16 +122,16 @@ def make_video(wd=defaut_work_dir,
             # END Sort
 
             # make video for class
-            output_path = os.path.join(output_dir, prefix_output+"_"+c+".mp4")
+            output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
+            output = av.open(output_path, 'w')
+            stream = output.add_stream("mpeg4", "%d" % fps)
 
-            #create directory where to save edited images
-            temp_path = os.path.join(os.getcwd(),'tmp/')
-            if os.path.exists(temp_path):
-                shutil.rmtree(temp_path)
-            os.makedirs(temp_path)
-
-            i = 0
-            for path in class_paths:
+            img = Image.open(class_paths[0])
+            
+            stream.height = img.size[0]
+            stream.width = img.size[1]
+            
+            for frame_id,path in enumerate(class_paths):
                 if not path.endswith('.png'):
                     continue
 
@@ -99,6 +140,16 @@ def make_video(wd=defaut_work_dir,
                 if img.mode != "RGB":
                     img=img.convert("RGB")
 
+                if stretch_frames:
+                    img = np.asarray(img) 
+
+                    r = img[:,:,0]
+                    eq_1 = hist_stretching(r)
+                    img = Image.fromarray(eq_1, 'L')
+
+                    if img.mode != "RGB":
+                        img=img.convert("RGB")
+                        
                 if text_to_draw:
                     draw = ImageDraw.Draw(img)
                     font = ImageFont.truetype("SF-UI-Text-Medium.otf", 16)
@@ -121,20 +172,25 @@ def make_video(wd=defaut_work_dir,
                     draw = ImageDraw.Draw(img)
                     draw.text((10, 200),date_of_video.strftime("%Y-%m-%d %H:%M"),(255,255,255),font=font)
 
-                print "saved image %d" %i
-                img.save('./tmp/img%020d.png' %i, 'png', quality=100)
-                i = i+1
+                if add_frame_id:
+                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 18)
+                    draw = ImageDraw.Draw(img)
+                    draw.text((180, 210),str("%6d"%frame_id),(255,255,255),font=font)
+                    
+                img_matrix = np.asarray(img)
+                frame = av.VideoFrame.from_ndarray(img_matrix)
+                packet = stream.encode(frame)
+                output.mux(packet)
 
+            output.close()
             print "finished composing images for ffmpeg"
-            os.system("ffmpeg -framerate 60 -pattern_type glob -i 'tmp/*.png' -c:v libx264 %s" %output_path)
-            shutil.rmtree(os.path.join(temp_path))
-            print "done. video at %s" %output_path
     
 def main(argv):
     new_config = {}
     try:
         opts, args = getopt.getopt(argv,"hi:o:f:t:c:",["help","input=","output=","files=",
-                                                       "thermal_mode=","fps=","classes=", "text=", "add_date"])
+                                                       "thermal_mode=","fps=","classes=", "text=", "add_date", 
+                                                       "add_frame_id","stretch_frames"])
     except getopt.GetoptError:
         print """video_from_frames.py -i <input_dir> -o <output_dir> -f '["<file_with_image_paths1>",...]' """ + \
               """--fps=<fps> -t <x_tim> -c '["class1_id", ...]' --text=<text to draw in image> --add_date"""
@@ -160,7 +216,11 @@ def main(argv):
             new_config["text_to_draw"] = arg
         elif opt in ["--add_date"]:
             new_config["add_date"] = True
-
+        elif opt in ["--add_frame_id"]:
+            new_config["add_frame_id"] = True
+        elif opt in ["--stretch_frames"]:
+            new_config["stretch_frames"] = True
+            
     make_video(**new_config)
 
 if __name__ == "__main__":
