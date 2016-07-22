@@ -8,16 +8,16 @@
 donwload_videos=false
 
 #path to folder where videos are saved or have to be saved
-videos_folder=../videos_ipod5
+videos_folder=../videos_golden5s
 
 #generate frames from videos
 has_to_generate_frames=false
 
 #thermix's group where videos are storaged
-thermix_group=sarmiento_004
+thermix_group=suenos_dorados_3
 
 #thermix user email (videos will be downloaded from user's wall)
-user_owner_email=ipod@ipod.com
+user_owner_email=golden5s@bramblexpress.com
 
 #ccv model name
 model_name=thermix_35a
@@ -80,18 +80,20 @@ fi
 cd ../../thermix/ARTraining
 labeled_frames_path=/media/Gui2/thermix/"$model_name"_"$thermix_group"
 
-if [ ! -d $labeled_frames_path ]; then
+#if [ ! -d $labeled_frames_path ]; then
 output_dir=$labeled_frames_path \
+dataset_filepath=$frames_dir/14_tim/thermix_1_files.txt \
 input_dir=$frames_dir \
 words_dir=$model_folder/"$model_name"._words \
 results=$model_results_file \
 stretch_image=$stretch_frames \
 add_date=$add_date \
 skip_if_file_exists=true \
+skip_labels='["person","background"]' \
 runipy draw_cnn_on_images.ipynb
-fi
+#fi
 
-python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $labeled_frames_path -m thermix_1 --only_dataset
+#python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $labeled_frames_path -m thermix_1 --only_dataset
 
 #if [ ! -d ../mov_"$thermix_group"_"$model_name" ]; then
 #python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t 14_tim -o ../mov_"$thermix_group"_"$model_name" -f #'["'"$labeled_frames_path"'/14_tim/thermix_1_files.txt"]' --split_in_days
@@ -141,19 +143,20 @@ if [ $make_poses_video = true ]; then
 
 #  if [ ! -d $labeled_frames_path ]; then
       output_dir=$labeled_frames_path \
+      dataset_filepath=$frames_dir/14_tim/thermix_1_files.txt \
       input_dir=$frames_dir \
       words_dir=$poses_model_folder/"$poses_model_name"._words \
       results=$poses_model_results_file \
       stretch_image=$stretch_frames \
       add_date=$add_date \
-      skip_if_file_exists=false \
+      skip_if_file_exists=true \
       runipy draw_cnn_on_images.ipynb
 #  fi
   
-#  python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $labeled_frames_path -m thermix_1 --only_dataset
+  python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $labeled_frames_path -m thermix_1 --only_dataset
   
   if [ ! -d ../mov_"$thermix_group"_"$poses_model_name" ]; then
-      python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t 14_tim -o ../mov_"$thermix_group"_"$poses_model_name" -f '["'"$labeled_frames_path"'/14_tim/thermix_1_files.txt"]' --split_in_days
+      python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t 14_tim -o ../mov_"$thermix_group"_"$poses_model_name" -f '["'"$labeled_frames_path"'/14_tim/thermix_1_files.txt"]'
 
       cd youtube_upload
       for filepath in $(ls -f ../../mov_"$thermix_group"_"$poses_model_name"/*); do

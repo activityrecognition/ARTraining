@@ -124,7 +124,6 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                         try:
                             # str_date_of_video = 2016-06-20T18%3A46%3A22
                             str_date_of_video = "T".join(os.path.splitext(video)[0].split("_")[-2:])
-
                             # date_of_video = datetime(2016-06-20 18:46:22)
                             date_of_video = datetime.strptime(str_date_of_video,"%Y-%m-%dT%H%%3A%M%%3A%S")
 
@@ -134,7 +133,7 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                             dates_and_videos.append((date_of_video, video))
                         except Exception as e:
                             print "Error getting date from video named: %s.\n%s" %(video, str(e))
-                    dates_and_videos = sorted(dates_and_videos, key=itemgetter(0))    
+                    dates_and_videos = sorted(dates_and_videos, key=itemgetter(0))
                     from_date = dates_and_videos[0][0]+timedelta(hours=24*(specific_day-1))
                     to_date = dates_and_videos[0][0]+timedelta(hours=24*specific_day)
                     category_videos = [v for d,v in dates_and_videos if d >= from_date and d < to_date]

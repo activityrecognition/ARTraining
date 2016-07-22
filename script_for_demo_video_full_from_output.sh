@@ -27,8 +27,10 @@ stretch_frames=true
 #frames need date
 add_date=true
 
-from_day=1
-to_day=2
+add_frame_id=true
+
+from_day=2
+to_day=3
 
 ####################
 #DO NOT MODIFY BELOW THIS LINE
@@ -89,6 +91,7 @@ results=$model_results_file \
 stretch_image=$stretch_frames \
 add_date=$add_date \
 skip_if_file_exists=true \
+add_frame_id=$add_frame_id \
 runipy draw_cnn_on_images.ipynb
 fi
 
@@ -110,10 +113,10 @@ rm -rf $labeled_frames_path
 fi
 
 #generate graph
-cnn_classification=$env_cnn_classification \
-cnn_classnames=$env_cnn_classnames \
-min_date=$env_min_date \
-max_date=$env_max_date \
-runipy plot_timelapse_cnn_results.ipynb
+#cnn_classification=$env_cnn_classification \
+#cnn_classnames=$env_cnn_classnames \
+#min_date=$env_min_date \
+#max_date=$env_max_date \
+#runipy plot_timelapse_cnn_results.ipynb
 
 done
