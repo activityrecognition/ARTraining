@@ -1,3 +1,0 @@
-1 lying 
-2 sitting 
-3 standing 
