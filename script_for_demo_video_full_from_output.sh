@@ -1,14 +1,14 @@
 #PEOPLE DETECTOR Vars
 
 #true if it's required to download videos. false to use videos located in $videos_folder
-download_videos=true
+download_videos=false
 
 #path to folder where videos are saved or have to be saved
 #videos_folder=../videos_golden5s
 videos_folder=$1
 
 #generate frames from videos
-has_to_generate_frames=true
+has_to_generate_frames=false
 
 #thermix's group where videos are storaged
 #thermix_group=sarmiento_003
@@ -29,8 +29,8 @@ add_date=true
 
 add_frame_id=true
 
-from_day=2
-to_day=3
+from_day=$4
+to_day=$5
 
 ####################
 #DO NOT MODIFY BELOW THIS LINE
