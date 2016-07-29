@@ -4,13 +4,13 @@
 donwload_videos=false
 
 #path to folder where videos are saved or have to be saved
-videos_folder=../videos_golden5s
+videos_folder=../ARThermal/videos_golden5s
 
 #generate frames from videos
 has_to_generate_frames=false
 
 #thermix's group where videos are storaged
-thermix_group=full_day_pedro
+thermix_group=$1 #full_day_pedro
 
 #thermix user email (videos will be downloaded from user's wall)
 user_owner_email=golden5s@bramblexpress.com
@@ -24,8 +24,8 @@ stretch_frames=true
 #frames need date
 add_date=true
 
-from_day=1
-to_day=1
+from_day=$2
+to_day=$3
 
 ###########################
 #POSES Vars
@@ -38,7 +38,7 @@ poses_model_name=thermix_33a
 #DO NOT MODIFY BELOW THIS LINE
 
 #folder where raw frames without movement will be saved
-frames_dir=/media/Gui2/thermix/"$thermix_group"_frames_no_movement
+frames_dir=/media/Gui2/thermix/ARThermal/"$thermix_group"_frames_no_movement
 
 #folder where the ccv model is located
 model_folder=/media/Gui2/thermix/ARTraining/trained_models/$model_name
@@ -82,7 +82,7 @@ else
 fi
 
 cd ../../thermix/ARTraining
-labeled_frames_path=/media/Gui2/thermix/"$model_name"_"$thermix_group"
+labeled_frames_path=../ARThermal/"$model_name"_"$thermix_group"_day"$day"
 
 #if [ ! -d $labeled_frames_path ]; then
 output_dir=$labeled_frames_path \
@@ -94,6 +94,7 @@ stretch_image=$stretch_frames \
 add_date=$add_date \
 skip_if_file_exists=true \
 skip_labels='["person"]' \
+add_frame_id=true \
 runipy draw_cnn_on_images.ipynb
 #fi
 
@@ -131,7 +132,7 @@ if [ $make_poses_video = true ]; then
   fi
   
   cd ../../thermix/ARTraining
-  labeled_frames_path=/media/Gui2/thermix/"$model_name"_"$thermix_group"
+  labeled_frames_path=../ARThermal/"$model_name"_"$thermix_group"_day"$day"
 
 #  if [ ! -d $labeled_frames_path ]; then
       output_dir=$labeled_frames_path \
@@ -142,6 +143,7 @@ if [ $make_poses_video = true ]; then
       stretch_image=$stretch_frames \
       add_date=$add_date \
       skip_if_file_exists=true \
+      add_frame_id=true \
       runipy draw_cnn_on_images.ipynb
 #  fi
   
@@ -152,7 +154,7 @@ fi
 mov_dir=../mov_"$thermix_group"_"$model_name"_day"$day"
 if [ ! -d $mov_dir ]; then
 python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t 14_tim -o $mov_dir -f '["'"$labeled_frames_path"'/14_tim/thermix_1_files.txt"]'
-
+fi
 cd youtube_upload
 for filepath in $(ls -f ../$mov_dir/*); do
         video_name=$(basename "$filepath")
@@ -162,6 +164,6 @@ done
 cd ..
 
 #rm -rf $labeled_frames_path
-fi
+#fi
 
 done

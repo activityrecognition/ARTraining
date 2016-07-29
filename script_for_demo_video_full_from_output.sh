@@ -80,9 +80,9 @@ else
 fi
 
 cd ../../thermix/ARTraining
-labeled_frames_path=/media/Gui2/thermix/"$model_name"_"$thermix_group"
+labeled_frames_path=../ARThermal/"$model_name"_"$thermix_group""_day""$day"
 
-if [ ! -d $labeled_frames_path ]; then
+if [ ! -d "$labeled_frames_path" ]; then
 output_dir=$labeled_frames_path \
 dataset_filepath=$frames_dir/14_tim/thermix_1_files.txt \
 input_dir=$frames_dir \
@@ -100,7 +100,7 @@ python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_
 mov_dir=../mov_"$thermix_group"_"$model_name"_day"$day"
 if [ ! -d $mov_dir ]; then
 python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t 14_tim -o $mov_dir -f '["'"$labeled_frames_path"'/14_tim/thermix_1_files.txt"]'
-
+fi
 cd youtube_upload
 for filepath in $(ls -f ../$mov_dir/*); do
         video_name=$(basename "$filepath")
@@ -109,8 +109,8 @@ for filepath in $(ls -f ../$mov_dir/*); do
 done
 cd ..
 
-rm -rf $labeled_frames_path
-fi
+#rm -rf $labeled_frames_path
+#fi
 
 #generate graph
 #cnn_classification=$env_cnn_classification \

@@ -54,6 +54,9 @@ def create_dataset_folders(dataset_dir, all_labels, dataset_labels):
         if not os.path.exists(path_for_label):
             os.makedirs(path_for_label)
 
+def find_frames_of_video_on_disk(root_path, video_name):
+    folders = os.listdir(root_path)
+    folders = [f for f in folders if os.path.]
 def save_frames_of_video(video_path, one_image_per_channel=False):
     try:
         container = av.open(video_path)
