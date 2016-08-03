@@ -4,6 +4,10 @@
 ## Mac:
 ### brew install ffmpeg pkg-config
 ## Ubuntu:
+###sudo nano /etc/apt/sources.list
+###ADD:
+###deb http://us.archive.ubuntu.com/ubuntu trusty main multiverse
+###SAVE and close
 ###sudo apt-get -y install build-essential checkinstall git libfaac-dev libgpac-dev \
 ###libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev \
 ###libvorbis-dev pkg-config texi2html yasm zlib1g-dev libasound-dev
@@ -42,6 +46,8 @@ default_testing_proportion = 1-default_training_proportion
 #day zero means day functionality off
 default_specific_day=0
 
+default_search_frames_on_path=None
+
 def label_for_group(group_name, labels):
     group_label = [item for item in labels if item in group_name]
     if len(group_label) != 1:
@@ -54,9 +60,23 @@ def create_dataset_folders(dataset_dir, all_labels, dataset_labels):
         if not os.path.exists(path_for_label):
             os.makedirs(path_for_label)
 
-def find_frames_of_video_on_disk(root_path, video_name):
-    folders = os.listdir(root_path)
-    folders = [f for f in folders if os.path.]
+def get_frames_of_videos_on_disk(root_path, tim):
+    # video_frames = {video_name: video_frames_dir, ...}
+    video_frames = dict()
+    for root, dirs, files in os.walk(root_path):
+        for d in dirs:
+            dir_path = os.path.join(root,d)
+            if "frames_no_movement" not in dir_path:
+                continue
+            
+            split = dir_path.split("/")
+            
+            # for being a video_frames_dir, it must be ..../tim/class_id/video_name,
+            # checking that tim == tim  and class_id is a number is enough for now
+            if len(split) >= 3 and split[-3] == tim and split[-2].isdigit():
+                video_frames[d] = dir_path
+    return video_frames
+    
 def save_frames_of_video(video_path, one_image_per_channel=False):
     try:
         container = av.open(video_path)
@@ -221,7 +241,8 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                                  thermal_image_modes=default_thermal_image_modes,
                                  labels_for_dataset=default_labels_for_dataset, 
                                  remove_movement=False,
-                                 specific_day=default_specific_day):
+                                 specific_day=default_specific_day,
+                                 search_frames_on_path=default_search_frames_on_path):
     if len(labels_for_dataset) == 0:
         raise "At least one label is required"
 
@@ -234,6 +255,13 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
 
     groups_dirs = os.listdir(input_dir)
 
+    if search_frames_on_path is not None:
+        if len(thermal_image_modes)>1:
+            print "search_frames_on_path option not available for more than one tim"
+            return
+        
+        video_frames_paths = get_frames_of_videos_on_disk(search_frames_on_path, thermal_image_modes[0])
+        
     print groups_dirs
     for group_dir in groups_dirs:
         group_label = label_for_group(group_dir,labels_for_dataset)
@@ -261,10 +289,24 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
             input_thermal_files = os.listdir(thermal_path)
 
             for file in input_thermal_files:
+                video_name = os.path.splitext(file)[0]
+                destination_dir = os.path.join(output_thermal,str(all_labels.index(group_label)+1),video_name)
+                
+                # if directory of video exists, means that its frames were generated before, so continue
+                if os.path.exists(destination_dir):
+                    continue
+                    
                 print "Generating frames of file %s" % file
-                destination_dir = os.path.join(output_thermal,str(all_labels.index(group_label)+1),os.path.splitext(file)[0])
-                if not os.path.exists(destination_dir):
-                    os.makedirs(destination_dir)
+                if search_frames_on_path is not None:
+                    video_dir_path = video_frames_paths.get(video_name)
+                    if not video_dir_path:
+                        print "ERROR video frames does not exist (%s)" % video_name
+                        return
+                    
+                    shutil.copytree(video_dir_path,destination_dir)
+                    continue
+                    
+                os.makedirs(destination_dir)
 
                 src = os.path.join(thermal_path,file)
                 dest = os.path.join(destination_dir, file)
@@ -281,15 +323,26 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"hi:o:l:m:p:t:",["help","input=","output=","labels=","model_name=",
                                                          "testing_proportion=","only_dataset", "thermal_modes=",
-                                                         "remove_movement", "all_labels=", "day="])
+                                                         "remove_movement", "all_labels=", "day=",
+                                                         "search_frames_on_path="])
     except getopt.GetoptError:
         print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
-              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset"""
+              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset""" + \
+              """new optional parameters:\n--all_labels='["<label1>","<label2>"]'\n""" + \
+              """sometimes subsampling a dataset is needed, so option -l might not include all classes storaged in the """ + \
+              """output. For manteining the class_id of each class (avoiding mixing frames of different classes) """ + \
+              """use all_labels option giving all the labels storaged in the original order"""
+              
+              
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', "--help"):
             print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
-              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset"""
+              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset""" + \
+              """new optional parameters:\n--all_labels='["<label1>","<label2>"]'\n""" + \
+              """sometimes subsampling a dataset is needed, so option -l might not include all classes storaged in the """ + \
+              """output. For manteining the class_id of each class (avoiding mixing frames of different classes) """ + \
+              """use all_labels option giving all the labels storaged in the original order"""
             sys.exit()
         elif opt in ("-o", "--output"):
             new_config["output_dir"] = arg
@@ -312,9 +365,13 @@ def main(argv):
             new_config["all_labels"] = ast.literal_eval("%s" % arg)
         elif opt in ("--day"):
             new_config["specific_day"] = int(arg)
+        elif opt in ("--search_frames_on_path"):
+            new_config["search_frames_on_path"] = arg
+            
     if only_dataset:
         new_config.pop("remove_movement",False)
         new_config.pop("input_dir",None)
+        new_config.pop("search_frames_on_path", None)
         generate_training_and_testing_list(**new_config)
     else:
         prepare_dataset_for_training(**new_config)

@@ -87,6 +87,9 @@ def make_video(wd=defaut_work_dir,
         for l in content:
             entry = l.split()
             entry_class = entry[0]
+            if not entry_class in classes:
+                continue
+            
             entry_path = os.path.join(entry[1])
 
             #remove last dir because entry_path include parent dir
@@ -132,6 +135,7 @@ def make_video(wd=defaut_work_dir,
             stream.width = img.size[1]
             
             for frame_id,path in enumerate(class_paths):
+                print "%d %s" %(frame_id,path)
                 if not path.endswith('.png'):
                     continue
 

@@ -12,7 +12,8 @@ tim=14_tim
 #today=12-06-2016
 output_dir=trained_models/"$model_name"
 
-dataset_dir=../dataset_poses_people_background
+dataset_dir=../dataset_merged
+#dataset_dir=../dataset_poses_people_background
 #dataset_dir=../dataset_thermalRaw_no_movement_2
 #dataset_dir=../dataset_thermal_pose
 
@@ -22,7 +23,7 @@ prepare_data_for_training="prepare_data_for_training.py -l $all_labels --all_lab
 #prepare_data_for_training=prepare_data_for_training.py
 #prepare_data_for_training=prepare_data_for_training_pose.py
 
-mkdir $output_dir
+mkdir -p $output_dir
 
 if [ $# -gt 1 ]; then
 python $prepare_data_for_training -o $dataset_dir -m $model_name -t '["'"$tim"'"]' --only_dataset | tee $output_dir/output_"$model_name".txt
@@ -31,6 +32,7 @@ mv $dataset_dir/$tim/"$model_name"* $output_dir
 
 #generate dataset videos
 mov_dir=../mov_dataset_"$model_name"
+if [ ! -d $mov_dir ]; then
 python video_from_images.py -c $all_labels_classes -i $dataset_dir  -t $tim -o $mov_dir -f '["'"$output_dir"/"$model_name"'_files.txt"]' --text=THERMIX
 
 cd youtube_upload
@@ -40,13 +42,11 @@ for filepath in $(ls -f ../$mov_dir/*); do
         --title=dataset_"$video_name" --privacyStatus="private"
 done
 cd ..
+fi
+
 else 
 mv $dataset_dir/$tim/"$model_name"* $output_dir
 fi
-
-
-
-
 
 cd ../../ccv/bin
 #sudo ./image-net --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file

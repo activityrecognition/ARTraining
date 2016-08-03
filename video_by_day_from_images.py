@@ -25,13 +25,13 @@ def create_temp_dir_for_video(video_path):
     return temp_dir
 
 def create_video_with_frames_in_path(frames_container, frame_rate, output_path):
-    #os.system("ffmpeg -framerate %d -pattern_type glob -i '%s/*.png' -c:v libx264 %s" % (frame_rate, 
-    #                                                                                     frames_container, 
-    #                                                                                     output_path))
-
-    os.system("ffmpeg -r %d -i '%s/img%%020d.png' -vcodec libx264 %s" % (frame_rate, 
-                                                                         frames_container, 
-                                                                         output_path))
+    os.system("ffmpeg -framerate %d -pattern_type glob -i '%s/*.png' -c:v libx264 %s" % (frame_rate, 
+                                                                                         frames_container, 
+                                                                                         output_path))
+    #cwd = os.getcwd()
+    #os.system("cd %s && ffmpeg -r %d -f image2 -pattern_type glob -i '*.png' -vcodec libx264 %s && cd %s" % (frames_container,
+    #                                                                                              frame_rate, 
+    #                                                                                              output_path, cwd))
     shutil.rmtree(frames_container)
     
 def make_video(wd=defaut_work_dir,
