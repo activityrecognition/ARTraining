@@ -127,10 +127,36 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
                     if semantic["category"] == "thermalImageMode":
                         tim = int(float(semantic["score"]))
                         tim = tim if tim != 12 else 4
+                        tim = tim if tim != 14 else 15
                         thermal_image_mode = "%d_tim" % tim
                         if thermal_image_mode not in thermal_image_modes:
                             avoid_video = True
 
+                    if semantic["category"] == "includeRgb":
+                        if "15_tim" not in thermal_image_modes:
+                            continue
+
+                        extra_files = requests.get('%sentries/verzus/waitings/%d/extra_files/' % (BASE_URL, entry_id),
+                                                   verify=False,
+                                                   params={"page":page_number},
+                                                   headers={'Authorization':'Token %s' % token})
+
+                        if extra_files.status_code == 200:
+                            extra_files = extra_files.json()
+                            for extra_file in extra_files["extra_files"]:
+                                extra_file_url = extra_file["file"]
+                                extra_file_base_url = extra_file_url.split("?")[0]
+                                if extra_file_base_url.endswith("_1.mov"):
+                                    video_urls.append(("14_tim", video_semantic, video_orientation,extra_file_url))
+                                    if incremental and is_video_on_disk(output_dir, group_name, order_by_semantic, 
+                                                                        video_semantic, video_orientation, "14_tim", 
+                                                                        extra_file_url):
+                                        finish_incremental=True
+
+                                    extra_videos_count += 1  
+                                    break
+                        
+                            
                     if semantic["category"] == "includeThermalData":
                         if "14_tim" not in thermal_image_modes:
                             continue
@@ -206,8 +232,6 @@ def download_videos_of_group(videos_urls, group_name, group_id, output_dir, orde
         if not os.path.exists(destination_dir):
             os.makedirs(destination_dir)
 
-        response = requests.get(url, stream=True)
-
         filename = url.split("?")[0].replace("/","_").split("_",3)[-1]
         print filename.encode('ascii', 'ignore')
 
@@ -215,6 +239,7 @@ def download_videos_of_group(videos_urls, group_name, group_id, output_dir, orde
         if os.path.exists(filepath):
             continue
 
+        response = requests.get(url, stream=True)
         with open(filepath, "wb") as handle:
             for data in tqdm(response.iter_content()):
                 handle.write(data)

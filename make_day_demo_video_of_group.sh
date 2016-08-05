@@ -14,6 +14,8 @@ has_to_generate_frames=$7
 #thermix_group=sarmiento_003
 thermix_group=$2
 
+tim=14_tim
+
 #thermix user email (videos will be downloaded from user's wall)
 #user_owner_email=golden5s@bramblexpress.com
 user_owner_email=$3
@@ -50,7 +52,7 @@ model_results_file=$model_folder/"$thermix_group"_classify.txt
 all_labels='["person","background","'"$thermix_group"'"]'
 
 if [ $download_videos == true ]; then
-python video_downloader.py -o $videos_folder -e $user_owner_email -l '[]' -g '["'"$thermix_group"'"]' -t '["14_tim"]' --incremental
+python video_downloader.py -o $videos_folder -e $user_owner_email -l '[]' -g '["'"$thermix_group"'"]' -t '["'"$tim"'"]' --incremental
 fi
 
 for day in `seq $from_day $to_day` ; do
@@ -58,10 +60,10 @@ for day in `seq $from_day $to_day` ; do
 echo day_"$day"
 
 if [ $has_to_generate_frames == true ]; then
-python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -i $videos_folder -t '["14_tim"]' -o $frames_dir -m thermix_1 --remove_movement
+python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -i $videos_folder -t '["'"$tim"'"]' -o $frames_dir -m thermix_1 --remove_movement
 fi
 
-python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $frames_dir -m thermix_1 --only_dataset --day="$day"
+python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["'"$tim"'"]' -o $frames_dir -m thermix_1 --only_dataset --day="$day"
 
 gpu_is_busy=$(nvidia-smi | grep ./cnnclassify | wc -l)
 while [ $gpu_is_busy = 1 ]
@@ -72,17 +74,17 @@ done
 
 if [ -f $model_results_file ]; then
     results_filepath=$model_results_file \
-    dataset_filepath=$frames_dir/14_tim/thermix_1_files.txt \
-    output_filepath=$frames_dir/14_tim/thermix_1_files.txt.temp \
+    dataset_filepath=$frames_dir/$tim/thermix_1_files.txt \
+    output_filepath=$frames_dir/$tim/thermix_1_files.txt.temp \
     runipy get_non_classified_files.ipynb
 
     cd ../../ccv/bin
-    ./cnnclassify $frames_dir/14_tim/thermix_1_files.txt.temp $model_path $frames_dir | tee -a $model_results_file
+    ./cnnclassify $frames_dir/$tim/thermix_1_files.txt.temp $model_path $frames_dir | tee -a $model_results_file
     
-    rm -rf $frames_dir/14_tim/thermix_1_files.txt.temp
+    rm -rf $frames_dir/$tim/thermix_1_files.txt.temp
 else
     cd ../../ccv/bin
-    ./cnnclassify $frames_dir/14_tim/thermix_1_files.txt $model_path $frames_dir | tee $model_results_file
+    ./cnnclassify $frames_dir/$tim/thermix_1_files.txt $model_path $frames_dir | tee $model_results_file
 fi
 
 cd ../../thermix/ARTraining
@@ -90,7 +92,7 @@ labeled_frames_path=../ARThermal/"$model_name"_"$thermix_group""_day""$day"
 
 #if [ ! -d "$labeled_frames_path" ]; then
 output_dir=$labeled_frames_path \
-dataset_filepath=$frames_dir/14_tim/thermix_1_files.txt \
+dataset_filepath=$frames_dir/$tim/thermix_1_files.txt \
 input_dir=$frames_dir \
 words_dir=$model_folder/"$model_name"._words \
 results=$model_results_file \
@@ -101,19 +103,25 @@ add_frame_id=$add_frame_id \
 runipy draw_cnn_on_images.ipynb
 #fi
 
-python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["14_tim"]' -o $labeled_frames_path -m thermix_1 --only_dataset
+python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["'"$tim"'"]' -o $labeled_frames_path -m thermix_1 --only_dataset
 
 mov_dir=../mov_"$thermix_group"_"$model_name"_day"$day"
 if [ ! -d $mov_dir ]; then
-python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t 14_tim -o $mov_dir -f '["'"$labeled_frames_path"'/14_tim/thermix_1_files.txt"]'
-fi
+python video_by_day_from_images.py -c '["3"]' -i $labeled_frames_path -t $tim -o $mov_dir -f '["'"$labeled_frames_path"'/'"$tim"'/thermix_1_files.txt"]'
+
 cd youtube_upload
 for filepath in $(ls -f ../$mov_dir/*); do
         video_name=$(basename "$filepath")
-        python upload_video.py --file=../$mov_dir/$video_name \
-        --title="$thermix_group"_"$model_name"_day"$day"_"$video_name" --privacyStatus="private"
+        python upload_video.py --privacyStatus="private" --file=../$mov_dir/$video_name \
+        --title="$thermix_group"_"$model_name"_day"$day"_"$video_name"
 done
 cd ..
+fi
+
+#if fail upload:
+#thermix_group=Victor_006;model_name=thermix_39a;day=1;video_name=thermix_1_files_3.mp4;python upload_video.py --privacyStatus="private" --file=../../mov_"$thermix_group"_"$model_name"_day"$day"/$video_name \
+#        --title="$thermix_group"_"$model_name"_day"$day"_"$video_name"
+
 
 #rm -rf $labeled_frames_path
 #fi
