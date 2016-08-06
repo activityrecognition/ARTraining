@@ -119,7 +119,7 @@ cd ..
 fi
 
 #if fail upload:
-#thermix_group=Victor_006;model_name=thermix_39a;day=1;video_name=thermix_1_files_3.mp4;python upload_video.py --privacyStatus="private" --file=../../mov_"$thermix_group"_"$model_name"_day"$day"/$video_name \
+#thermix_group=Anne_002;model_name=thermix_39a;day=1;video_name=thermix_1_files_3.mp4;python upload_video.py --privacyStatus="private" --file=../../mov_"$thermix_group"_"$model_name"_day"$day"/$video_name \
 #        --title="$thermix_group"_"$model_name"_day"$day"_"$video_name"
 
 

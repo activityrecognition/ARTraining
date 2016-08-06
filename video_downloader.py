@@ -147,9 +147,9 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
                                 extra_file_url = extra_file["file"]
                                 extra_file_base_url = extra_file_url.split("?")[0]
                                 if extra_file_base_url.endswith("_1.mov"):
-                                    video_urls.append(("14_tim", video_semantic, video_orientation,extra_file_url))
+                                    video_urls.append(("15_tim", video_semantic, video_orientation,extra_file_url))
                                     if incremental and is_video_on_disk(output_dir, group_name, order_by_semantic, 
-                                                                        video_semantic, video_orientation, "14_tim", 
+                                                                        video_semantic, video_orientation, "15_tim", 
                                                                         extra_file_url):
                                         finish_incremental=True
 
