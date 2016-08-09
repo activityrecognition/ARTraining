@@ -1,7 +1,7 @@
 #currently running
-./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 sarmiento_008 ipod@ipod.com 1 1 true true
-./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s sarmiento_005 golden5s@bramblexpress.com 1 1 true true
-./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s sarmiento_007 golden5s@bramblexpress.com 1 1 true true
+./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Henry_006 ipod@ipod.com 1 1 true true
+./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Anne_006 golden5s@bramblexpress.com 1 1 true true
+./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Marge_007 black5@bramblexpress.com 1 1 true true
 
 
 #finished
@@ -17,8 +17,6 @@
 #./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Marge_004 black5@bramblexpress.com 1 1 true true
 #./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Anne_002 golden5s@bramblexpress.com 1 1 true true
 #./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Anne_004 golden5s@bramblexpress.com 1 1 true true
-
-#old pending
-#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Victor_002 ipod@ipod.com 1 1 true true
-#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Henry_003 golden5s@bramblexpress.com 1 1 true true
-#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Henry_004 golden5s@bramblexpress.com 1 1 true true
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 sarmiento_008 ipod@ipod.com 1 1 true true
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s sarmiento_005 golden5s@bramblexpress.com 1 1 true true
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s sarmiento_007 golden5s@bramblexpress.com 1 1 true true
