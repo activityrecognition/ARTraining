@@ -1,10 +1,24 @@
 #currently running
-./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Henry_006 ipod@ipod.com 1 1 true true
-./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Anne_006 golden5s@bramblexpress.com 1 1 true true
-./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Marge_007 black5@bramblexpress.com 1 1 true true
+./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Irene_001 black5@bramblexpress.com 1 1 true true '["14_tim"]' &
+./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Irene_002 black5@bramblexpress.com 1 1 true true '["14_tim"]' &
+./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Rick_001 golden5s@bramblexpress.com 1 1 true true '["14_tim"]' &
+./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Charles_001 ipod@ipod.com 1 1 true true '["14_tim"]' &
+./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Charles_002 ipod@ipod.com 1 1 true true '["14_tim"]' &
+./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Julien_001 ipod@ipod.com 1 1 true true '["14_tim"]' &
 
+wait
+echo "All finished"
+
+#pending
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Luke_001 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Charles_003 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Luke_002 ipod@ipod.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Charles_004 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
 
 #finished
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Henry_006 ipod@ipod.com 1 1 true true
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Anne_006 golden5s@bramblexpress.com 1 1 true true
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Marge_007 black5@bramblexpress.com 1 1 true true
 #./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Marge_006 black5@bramblexpress.com 1 1 true true
 #./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Anne_005 golden5s@bramblexpress.com 1 1 true true
 #./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 Victor_006 ipod@ipod.com 1 1 true true

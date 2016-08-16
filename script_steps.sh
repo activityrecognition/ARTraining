@@ -33,7 +33,7 @@ mv $dataset_dir/$tim/"$model_name"* $output_dir
 #generate dataset videos
 mov_dir=../mov_dataset_"$model_name"
 if [ ! -d $mov_dir ]; then
-python video_from_images.py -c $all_labels_classes -i $dataset_dir  -t $tim -o $mov_dir -f '["'"$output_dir"/"$model_name"'_files.txt"]' --text=THERMIX
+python video_from_images.py -c $all_labels_classes -i $dataset_dir  -t $tim -o $mov_dir -f '["'"$output_dir"/"$model_name"'_files.txt"]' --text=THERMIX --add_frame_id --stretch_frames | tee $output_dir/dataset_frames_ids.txt
 
 cd youtube_upload
 for filepath in $(ls -f ../$mov_dir/*); do
@@ -50,19 +50,23 @@ fi
 
 cd ../../ccv/bin
 #sudo ./image-net --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
-echo demo | sudo -S ./step1 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
+
+#echo demo | sudo -S 
+./step1 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
 
 cd ../../thermix/ARTraining
 output_filepath=./$output_dir/output_"$model_name".file runipy plot_ccv_thermix.ipynb
 cd ../../ccv/bin
 
-echo demo | sudo -S ./step2 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
+#echo demo | sudo -S 
+./step2 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
 
 cd ../../thermix/ARTraining
 output_filepath=./$output_dir/output_"$model_name".file runipy plot_ccv_thermix.ipynb
 cd ../../ccv/bin
 
-echo demo | sudo -S ./step3 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
+#echo demo | sudo -S 
+./step3 --train-list ../../thermix/ARTraining/$output_dir/"$model_name"_training.txt --test-list ../../thermix/ARTraining/$output_dir/"$model_name"_testing.txt --base-dir ../../thermix/ARTraining/$dataset_dir --working-dir ../../thermix/ARTraining/$output_dir/"$model_name".sqlite3 | tee -a ../../thermix/ARTraining/$output_dir/output_"$model_name".file
 
 cd ../../thermix/ARTraining
 output_filepath=./$output_dir/output_"$model_name".file runipy plot_ccv_thermix.ipynb

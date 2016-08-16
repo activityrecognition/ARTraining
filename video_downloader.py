@@ -119,6 +119,7 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
                 # UIDeviceOrientationFaceUp,              // Device oriented flat, face up
                 # UIDeviceOrientationFaceDown             // Device oriented flat, face down
                 video_orientation = "1"
+                extra_files = None
                 for semantic in video["entry"]["semantics"]["results"]:
                     if semantic["category"] == "has_video" and int(float(semantic["score"])) == 0:
                         avoid_video = True
@@ -135,15 +136,15 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
                     if semantic["category"] == "includeRgb":
                         if "15_tim" not in thermal_image_modes:
                             continue
-
-                        extra_files = requests.get('%sentries/verzus/waitings/%d/extra_files/' % (BASE_URL, entry_id),
+                        
+                        if not extra_files:
+                            extra_files = requests.get('%sentries/verzus/waitings/%d/extra_files/' % (BASE_URL, entry_id),
                                                    verify=False,
                                                    params={"page":page_number},
                                                    headers={'Authorization':'Token %s' % token})
 
                         if extra_files.status_code == 200:
-                            extra_files = extra_files.json()
-                            for extra_file in extra_files["extra_files"]:
+                            for extra_file in extra_files.json()["extra_files"]:
                                 extra_file_url = extra_file["file"]
                                 extra_file_base_url = extra_file_url.split("?")[0]
                                 if extra_file_base_url.endswith("_1.mov"):
@@ -161,19 +162,19 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
                         if "14_tim" not in thermal_image_modes:
                             continue
 
-                        extra_files = requests.get('%sentries/verzus/waitings/%d/extra_files/' % (BASE_URL, entry_id),
+                        if not extra_files:
+                            extra_files = requests.get('%sentries/verzus/waitings/%d/extra_files/' % (BASE_URL, entry_id),
                                                    verify=False,
                                                    params={"page":page_number},
                                                    headers={'Authorization':'Token %s' % token})
 
                         if extra_files.status_code == 200:
-                            extra_files = extra_files.json()
-                            for extra_file in extra_files["extra_files"]:
+                            for extra_file in extra_files.json()["extra_files"]:
                                 extra_file_url = extra_file["file"]
                                 extra_file_base_url = extra_file_url.split("?")[0]
                                 if extra_file_base_url.endswith("_1.mov"):
                                     exist_2 = False
-                                    for extra_file2 in extra_files["extra_files"]:
+                                    for extra_file2 in extra_files.json()["extra_files"]:
                                         extra_file_url2 = extra_file2["file"]
                                         extra_file_base_url2 = extra_file_url2.split("?")[0]
                                         if extra_file_base_url2.endswith("_2.mov"):
@@ -211,6 +212,7 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
                                                     url):
                     finish_incremental=True
         else:
+            video_urls.reverse()
             return video_urls
 
         page_number = page_number+1

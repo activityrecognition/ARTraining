@@ -48,6 +48,8 @@ default_specific_day=0
 
 default_search_frames_on_path=None
 
+default_has_to_resize=True
+
 def label_for_group(group_name, labels):
     group_label = [item for item in labels if item in group_name]
     if len(group_label) != 1:
@@ -77,7 +79,7 @@ def get_frames_of_videos_on_disk(root_path, tim):
                 video_frames[d] = dir_path
     return video_frames
     
-def save_frames_of_video(video_path, one_image_per_channel=False):
+def save_frames_of_video(video_path, one_image_per_channel=False, has_to_resize=True):
     try:
         container = av.open(video_path)
         video = next(s for s in container.streams if s.type == b'video')
@@ -85,7 +87,8 @@ def save_frames_of_video(video_path, one_image_per_channel=False):
         for packet in container.demux(video):
             for frame in packet.decode():
                 img = frame.to_image()
-                img = img.resize((257, 257))
+                if has_to_resize:
+                    img = img.resize((257, 257))
                 if one_image_per_channel:
                     rgb = img.split()
                     for i,channel in enumerate(rgb):
@@ -242,7 +245,8 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                                  labels_for_dataset=default_labels_for_dataset, 
                                  remove_movement=False,
                                  specific_day=default_specific_day,
-                                 search_frames_on_path=default_search_frames_on_path):
+                                 search_frames_on_path=default_search_frames_on_path,
+                                 has_to_resize=default_has_to_resize):
     if len(labels_for_dataset) == 0:
         raise "At least one label is required"
 
@@ -311,7 +315,7 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                 src = os.path.join(thermal_path,file)
                 dest = os.path.join(destination_dir, file)
                 shutil.copyfile(src, dest)
-                save_frames_of_video(dest, remove_movement)
+                save_frames_of_video(dest, remove_movement, has_to_resize)
                 os.remove(dest)
 
     generate_training_and_testing_list(output_dir, model_name, training_proportion, testing_proportion,
@@ -324,10 +328,10 @@ def main(argv):
         opts, args = getopt.getopt(argv,"hi:o:l:m:p:t:",["help","input=","output=","labels=","model_name=",
                                                          "testing_proportion=","only_dataset", "thermal_modes=",
                                                          "remove_movement", "all_labels=", "day=",
-                                                         "search_frames_on_path="])
+                                                         "search_frames_on_path=","no_resize"])
     except getopt.GetoptError:
         print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
-              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset""" + \
+              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset --no_resize""" + \
               """new optional parameters:\n--all_labels='["<label1>","<label2>"]'\n""" + \
               """sometimes subsampling a dataset is needed, so option -l might not include all classes storaged in the """ + \
               """output. For manteining the class_id of each class (avoiding mixing frames of different classes) """ + \
@@ -338,7 +342,7 @@ def main(argv):
     for opt, arg in opts:
         if opt in ('-h', "--help"):
             print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
-              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset""" + \
+              """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset --no_resize""" + \
               """new optional parameters:\n--all_labels='["<label1>","<label2>"]'\n""" + \
               """sometimes subsampling a dataset is needed, so option -l might not include all classes storaged in the """ + \
               """output. For manteining the class_id of each class (avoiding mixing frames of different classes) """ + \
@@ -367,8 +371,11 @@ def main(argv):
             new_config["specific_day"] = int(arg)
         elif opt in ("--search_frames_on_path"):
             new_config["search_frames_on_path"] = arg
+        elif opt in ("--no_resize"):
+            new_config["has_to_resize"] = False
             
     if only_dataset:
+        new_config.pop("resize", True)
         new_config.pop("remove_movement",False)
         new_config.pop("input_dir",None)
         new_config.pop("search_frames_on_path", None)
