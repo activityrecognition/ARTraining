@@ -61,6 +61,17 @@ def hist_stretching(im_asarray):
     
     return Y
 
+def get_date_from_video_path(video_path):
+    name_of_video = os.path.basename(video_path)
+
+    # str_date_of_video = 2016-06-20T18%3A46%3A22
+    str_date_of_video = "T".join(os.path.splitext(name_of_video)[0].split("_")[-2:])
+
+    # date_of_video = datetime(2016-06-20 18:46:22)
+    date_of_video = datetime.strptime(str_date_of_video,"%Y-%m-%dT%H%%3A%M%%3A%S")
+    
+    return date_of_video
+
 def make_video(wd=defaut_work_dir,
                tm=default_thermal_mode,
                filepaths=default_file_paths,
@@ -100,94 +111,96 @@ def make_video(wd=defaut_work_dir,
 
         prefix_output = os.path.basename(filepath).split('.')[0]
 
-        output_dir = os.path.join(FILE_DIR, od)
+    output_dir = os.path.join(FILE_DIR, od)
 
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
-        for c in files.keys():
-            print "build video for class index %s" % c
-            class_paths = files[c]
+    for c in files.keys():
+        print "build video for class index %s" % c
+        class_paths = files[c]
 
-            # Sort video path
-            videos_path = {}
-            for file in class_paths:
-                if not videos_path.get(os.path.dirname(file), None):
-                    videos_path[os.path.dirname(file)] = []
-                name, extension = os.path.basename(file).split(".")
-                videos_path[os.path.dirname(file)].append((int(name.replace("_","")), name, extension))
+        # Sort video path
+        videos_path = {}
+        for file in class_paths:
+            if not videos_path.get(os.path.dirname(file), None):
+                videos_path[os.path.dirname(file)] = []
+            name, extension = os.path.basename(file).split(".")
+            videos_path[os.path.dirname(file)].append((int(name.replace("_","")), name, extension))
 
-            class_paths = []
-            for video in sorted(videos_path.keys()):
-                video_frames = sorted(videos_path[video], key=itemgetter(0))
-                for v in video_frames:
-                    class_paths.append(os.path.join(video, "%s.%s" % v[1:]))
-            # END Sort
+        class_paths = []
+        #sort videos paths by date
+        videos_path_keys = sorted(videos_path.keys(), key=lambda x:get_date_from_video_path(x))
+        for video in videos_path_keys:
+            video_frames = sorted(videos_path[video], key=itemgetter(0))
+            for v in video_frames:
+                class_paths.append(os.path.join(video, "%s.%s" % v[1:]))
+        # END Sort
 
-            # make video for class
-            output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
-            output = av.open(output_path, 'w')
-            stream = output.add_stream("mpeg4", "%d" % fps)
+        # make video for class
+        output_path = os.path.join(output_dir, prefix_output+"_"+c+".mov")
+        output = av.open(output_path, 'w')
+        stream = output.add_stream("mpeg4", "%d" % fps)
 
-            img = Image.open(class_paths[0])
+        img = Image.open(class_paths[0])
             
-            stream.height = img.size[0]
-            stream.width = img.size[1]
+        stream.height = img.size[0]
+        stream.width = img.size[1]
             
-            for frame_id,path in enumerate(class_paths):
-                print "%d %s" %(frame_id,path)
-                if not path.endswith('.png'):
-                    continue
+        for frame_id,path in enumerate(class_paths):
+            print "%d %s" %(frame_id,path)
+            if not path.endswith('.png'):
+                continue
 
-                img = Image.open(path)
+            img = Image.open(path)
+
+            if img.mode != "RGB":
+                img=img.convert("RGB")
+
+            if stretch_frames:
+                img = np.asarray(img) 
+
+                r = img[:,:,0]
+                eq_1 = hist_stretching(r)
+                img = Image.fromarray(eq_1, 'L')
 
                 if img.mode != "RGB":
                     img=img.convert("RGB")
-
-                if stretch_frames:
-                    img = np.asarray(img) 
-
-                    r = img[:,:,0]
-                    eq_1 = hist_stretching(r)
-                    img = Image.fromarray(eq_1, 'L')
-
-                    if img.mode != "RGB":
-                        img=img.convert("RGB")
                         
-                if text_to_draw:
-                    draw = ImageDraw.Draw(img)
-                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 16)
-                    draw.text((10, 75),text_to_draw,(255,255,255),font=font)
+            if text_to_draw:
+                draw = ImageDraw.Draw(img)
+                font = ImageFont.truetype("SF-UI-Text-Medium.otf", 16)
+                draw.text((10, 75),text_to_draw,(255,255,255),font=font)
 
-                if add_date:
-                    # name_of_video = "Users_thermaldata_unkown_2016-06-20_18%3A46%3A22.000000_2"
-                    name_of_video = os.path.basename(os.path.dirname(path))
+            if add_date:
+                # name_of_video = "Users_thermaldata_unkown_2016-06-20_18%3A46%3A22.000000_2"
+                name_of_video = os.path.basename(os.path.dirname(path))
 
-                    # str_date_of_video = 2016-06-20T18%3A46%3A22
-                    str_date_of_video = "T".join(os.path.splitext(name_of_video)[0].split("_")[-2:])
+                # str_date_of_video = 2016-06-20T18%3A46%3A22
+                str_date_of_video = "T".join(os.path.splitext(name_of_video)[0].split("_")[-2:])
 
-                    # date_of_video = datetime(2016-06-20 18:46:22)
-                    date_of_video = datetime.strptime(str_date_of_video,"%Y-%m-%dT%H%%3A%M%%3A%S")
+                # date_of_video = datetime(2016-06-20 18:46:22)
+                date_of_video = datetime.strptime(str_date_of_video,"%Y-%m-%dT%H%%3A%M%%3A%S")
 
-                    #convert to argentinian date
-                    date_of_video -= timedelta(hours=3)
+                #convert to argentinian date
+                date_of_video -= timedelta(hours=3)
                     
-                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 12)
-                    draw = ImageDraw.Draw(img)
-                    draw.text((10, 200),date_of_video.strftime("%Y-%m-%d %H:%M"),(255,255,255),font=font)
+                font = ImageFont.truetype("SF-UI-Text-Medium.otf", 12)
+                draw = ImageDraw.Draw(img)
+                draw.text((10, 200),date_of_video.strftime("%Y-%m-%d %H:%M"),(255,255,255),font=font)
 
-                if add_frame_id:
-                    font = ImageFont.truetype("SF-UI-Text-Medium.otf", 18)
-                    draw = ImageDraw.Draw(img)
-                    draw.text((180, 210),str("%6d"%frame_id),(255,255,255),font=font)
+            if add_frame_id:
+                font = ImageFont.truetype("SF-UI-Text-Medium.otf", 18)
+                draw = ImageDraw.Draw(img)
+                draw.text((180, 210),str("%6d"%frame_id),(255,255,255),font=font)
                     
-                img_matrix = np.asarray(img)
-                frame = av.VideoFrame.from_ndarray(img_matrix)
-                packet = stream.encode(frame)
-                output.mux(packet)
+            img_matrix = np.asarray(img)
+            frame = av.VideoFrame.from_ndarray(img_matrix)
+            packet = stream.encode(frame)
+            output.mux(packet)
 
-            output.close()
-            print "finished composing images for ffmpeg"
+        output.close()
+        print "finished composing images for ffmpeg"
     
 def main(argv):
     new_config = {}
@@ -197,12 +210,14 @@ def main(argv):
                                                        "add_frame_id","stretch_frames"])
     except getopt.GetoptError:
         print """video_from_frames.py -i <input_dir> -o <output_dir> -f '["<file_with_image_paths1>",...]' """ + \
-              """--fps=<fps> -t <x_tim> -c '["class1_id", ...]' --text=<text to draw in image> --add_date"""
+              """--fps=<fps> -t <x_tim> -c '["class1_id", ...]' --text=<text to draw in image> --add_date --add_frame_id """ + \
+              """--stretch_frames"""
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', "--help"):
             print """video_from_frames.py -i <input_dir> -o <output_dir> -f '["<file_with_image_paths1>",...]' """ + \
-              """--fps=<fps> -t <x_tim> -c '["class1_id", ...]' --text=<text to draw in image> --add_date"""
+              """--fps=<fps> -t <x_tim> -c '["class1_id", ...]' --text=<text to draw in image> --add_date --add_frame_id """ + \
+              """--stretch_frames"""
             sys.exit()
         elif opt in ("-i", "--input"):
             new_config["wd"] = arg

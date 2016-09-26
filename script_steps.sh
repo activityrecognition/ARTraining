@@ -33,7 +33,7 @@ mv $dataset_dir/$tim/"$model_name"* $output_dir
 #generate dataset videos
 mov_dir=../mov_dataset_"$model_name"
 if [ ! -d $mov_dir ]; then
-python video_from_images.py -c $all_labels_classes -i $dataset_dir  -t $tim -o $mov_dir -f '["'"$output_dir"/"$model_name"'_files.txt"]' --text=THERMIX --add_frame_id --stretch_frames | tee $output_dir/dataset_frames_ids.txt
+#python video_from_images.py -c $all_labels_classes -i $dataset_dir  -t $tim -o $mov_dir -f '["'"$output_dir"/"$model_name"_training.txt'","'"$output_dir"/"$model_name"_testing.txt'"]' --text=THERMIX --add_frame_id --stretch_frames > $output_dir/dataset_frames_ids.txt
 
 cd youtube_upload
 for filepath in $(ls -f ../$mov_dir/*); do
@@ -56,6 +56,10 @@ cd ../../ccv/bin
 
 cd ../../thermix/ARTraining
 output_filepath=./$output_dir/output_"$model_name".file runipy plot_ccv_thermix.ipynb
+
+#only one step performed
+exit
+
 cd ../../ccv/bin
 
 #echo demo | sudo -S 

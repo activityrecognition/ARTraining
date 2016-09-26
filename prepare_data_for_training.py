@@ -49,6 +49,10 @@ default_specific_day=0
 default_search_frames_on_path=None
 
 default_has_to_resize=True
+default_size = (257,257)
+default_use_frame_id = False
+default_only_first_frame_in_dataset = False
+default_rect_to_crop = None
 
 def label_for_group(group_name, labels):
     group_label = [item for item in labels if item in group_name]
@@ -79,7 +83,7 @@ def get_frames_of_videos_on_disk(root_path, tim):
                 video_frames[d] = dir_path
     return video_frames
     
-def save_frames_of_video(video_path, one_image_per_channel=False, has_to_resize=True):
+def save_frames_of_video(video_path, one_image_per_channel=False, has_to_resize=True, new_size=(257,257), use_frame_id=False, rect_to_crop=None):
     try:
         container = av.open(video_path)
         video = next(s for s in container.streams if s.type == b'video')
@@ -87,12 +91,21 @@ def save_frames_of_video(video_path, one_image_per_channel=False, has_to_resize=
         for packet in container.demux(video):
             for frame in packet.decode():
                 img = frame.to_image()
+                
+                if rect_to_crop is not None:
+                    img = img.crop(rect_to_crop)
+                
                 if has_to_resize:
-                    img = img.resize((257, 257))
+                    img = img.resize(new_size)
+
                 if one_image_per_channel:
                     rgb = img.split()
                     for i,channel in enumerate(rgb):
-                        frame_path = os.path.join(os.path.dirname(video_path),'%d_%d.png' % (frame.index,i))
+                        if use_frame_id:
+                            frame_name='%d.png' % (frame.index*3+i)
+                        else:
+                            frame_name='%d_%d.png' % (frame.index,i)
+                        frame_path = os.path.join(os.path.dirname(video_path),frame_name)
                         if os.path.exists(frame_path):
                             return
                         img2 = PIL.Image.merge("RGB", (channel, channel, channel))
@@ -104,6 +117,7 @@ def save_frames_of_video(video_path, one_image_per_channel=False, has_to_resize=
                     img.save(frame_path)
     except Exception as e:
         print "Error getting frames of video %s" % video_path
+        print e
 
 def generate_training_and_testing_list(output_dir=default_output_dir,
                                        model_name=default_model_name,
@@ -112,7 +126,8 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                                        thermal_image_modes=default_thermal_image_modes,
                                        all_labels=default_labels,
                                        labels_for_dataset=default_labels_for_dataset,
-                                       specific_day=default_specific_day):
+                                       specific_day=default_specific_day, 
+                                       only_first_frame_in_dataset=default_only_first_frame_in_dataset):
     list_of_thermal_folders = os.listdir(output_dir)
 
     for thermal_folder in list_of_thermal_folders:
@@ -173,9 +188,12 @@ def generate_training_and_testing_list(output_dir=default_output_dir,
                     cat.append(mov)
                     frames = os.listdir(video_dir)
                     for frame in frames:
+                        if only_first_frame_in_dataset and frame not in ["0.png","0_0.png"]:
+                            continue
+                        
                         frame_path = os.path.join(thermal_folder, category, video, frame)
                         mov.append("%s %s " % (category, frame_path))
-
+ 
                         #write _files.txt
                         handle.write("%s %s \n" % (category, frame_path))
 
@@ -246,7 +264,11 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                                  remove_movement=False,
                                  specific_day=default_specific_day,
                                  search_frames_on_path=default_search_frames_on_path,
-                                 has_to_resize=default_has_to_resize):
+                                 has_to_resize=default_has_to_resize,
+                                 new_size=default_size,
+                                 use_frame_id=default_use_frame_id,
+                                 only_first_frame_in_dataset=default_only_first_frame_in_dataset,
+                                 rect_to_crop=default_rect_to_crop):
     if len(labels_for_dataset) == 0:
         raise "At least one label is required"
 
@@ -298,7 +320,15 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                 
                 # if directory of video exists, means that its frames were generated before, so continue
                 if os.path.exists(destination_dir):
-                    continue
+                    # dest = copy of video in frames dir
+                    dest = os.path.join(destination_dir, file)
+
+                    # if video exists in frames dir means that an error happend when the frames were generated,
+                    # so we remove the folder and process again
+                    if os.path.exists(dest):
+                        shutil.rmtree(destination_dir)
+                    else:
+                        continue
                     
                 print "Generating frames of file %s" % file
                 if search_frames_on_path is not None:
@@ -315,11 +345,12 @@ def prepare_dataset_for_training(input_dir=default_input_dir, output_dir=default
                 src = os.path.join(thermal_path,file)
                 dest = os.path.join(destination_dir, file)
                 shutil.copyfile(src, dest)
-                save_frames_of_video(dest, remove_movement, has_to_resize)
+                save_frames_of_video(dest, remove_movement, has_to_resize, new_size, use_frame_id, rect_to_crop)
                 os.remove(dest)
 
     generate_training_and_testing_list(output_dir, model_name, training_proportion, testing_proportion,
-                                       thermal_image_modes, all_labels, labels_for_dataset, specific_day)
+                                       thermal_image_modes, all_labels, labels_for_dataset, specific_day,
+                                       only_first_frame_in_dataset)
 
 def main(argv):
     new_config = {}
@@ -328,7 +359,9 @@ def main(argv):
         opts, args = getopt.getopt(argv,"hi:o:l:m:p:t:",["help","input=","output=","labels=","model_name=",
                                                          "testing_proportion=","only_dataset", "thermal_modes=",
                                                          "remove_movement", "all_labels=", "day=",
-                                                         "search_frames_on_path=","no_resize"])
+                                                         "search_frames_on_path=","no_resize",
+                                                         "resize_to_size=","use_frame_id", "only_first_frame_in_dataset",
+                                                         "crop_frames_to_rect="])
     except getopt.GetoptError:
         print """prepare_data_for_training.py -i <inputDir> -o <outputDir> -l '["<label1>","<label2>"]' """+ \
               """-m <model_name> -p <testing_proportion> -t '["4_tim","14_tim"]' --remove_movement --only_dataset --no_resize""" + \
@@ -373,8 +406,19 @@ def main(argv):
             new_config["search_frames_on_path"] = arg
         elif opt in ("--no_resize"):
             new_config["has_to_resize"] = False
+        elif opt in ("--resize_to_size"):
+            new_config["new_size"] = ast.literal_eval("%s" % arg)
+        elif opt in ("--use_frame_id"):
+            new_config["use_frame_id"] = True
+        elif opt in ("--only_first_frame_in_dataset"):
+            new_config["only_first_frame_in_dataset"] = True
+        elif opt in ("--crop_frames_to_rect"):
+            new_config["rect_to_crop"] = ast.literal_eval("%s" % arg)
             
     if only_dataset:
+        new_config.pop("rect_to_crop", "(0, 0, 120, 160)")
+        new_config.pop("use_frame_id", False)
+        new_config.pop("new_size", (257,257))
         new_config.pop("resize", True)
         new_config.pop("remove_movement",False)
         new_config.pop("input_dir",None)

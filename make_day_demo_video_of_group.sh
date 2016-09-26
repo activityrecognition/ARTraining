@@ -40,7 +40,7 @@ to_day=$5
 #DO NOT MODIFY BELOW THIS LINE
 
 #folder where raw frames without movement will be saved
-frames_dir=/media/Gui2/thermix/ARThermal/"$thermix_group"_frames_no_movement
+frames_dir=/media/Gui2/thermix/ARThermal/frames_no_movement/"$thermix_group"_frames_no_movement
 
 #folder where the ccv model is located
 model_folder=/media/Gui2/thermix/ARTraining/trained_models/$model_name
@@ -62,13 +62,22 @@ for day in `seq $from_day $to_day` ; do
 echo day_"$day"
 
 if [ $has_to_generate_frames == true ]; then
-python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -i $videos_folder -t '["'"$thermal_tim"'"]' -o $frames_dir -m thermix_1 --remove_movement
+
+videos_folder_name=$(basename "$videos_folder")
+size_param=""
+if [ $videos_folder_name == "videos_black5" ]; then
+    size_param='--crop_frames_to_rect=(0,0,120,160)'
 fi
+        
+python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -i $videos_folder -t '["'"$thermal_tim"'"]' -o $frames_dir -m thermix_1 --remove_movement $size_param
+fi
+
+exit
 
 python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["'"$thermal_tim"'"]' -o $frames_dir -m thermix_1 --only_dataset --day="$day"
 
 gpu_is_busy=$(nvidia-smi | grep ./cnnclassify | wc -l)
-while [ $gpu_is_busy = 1 ]
+while [ $gpu_is_busy = 2 ]
 do
 sleep 5s
 gpu_is_busy=$(nvidia-smi | grep ./cnnclassify | wc -l)
@@ -90,7 +99,7 @@ else
 fi
 
 cd ../../thermix/ARTraining
-labeled_frames_path=../ARThermal/"$model_name"_"$thermix_group""_day""$day"
+labeled_frames_path=../ARThermal/frames_for_making_demo_videos/"$model_name"_"$thermix_group""_day""$day"
 
 #if [ ! -d "$labeled_frames_path" ]; then
 output_dir=$labeled_frames_path \

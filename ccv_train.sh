@@ -20,9 +20,9 @@ all_labels='["lying","sitting","standing","people","background"]'
 
 videos_bucket_folder=../ARThermal/videos_bucket
 
-python video_downloader.py -e fpolacov@gmail.com -o $videos_bucket_folder -l '["bucket_"]' -g '["nor_sitting","sitting_peter"]' -t '["14_tim"]' --incremental
+python video_downloader.py -e fpolacov@gmail.com -o $videos_bucket_folder -l '["bucket_"]' -g '["nor_sitting","sitting_peter","sled_sitting","san_sitting","car_sitting","dan_sitting"]' -t '["14_tim"]' --incremental
 
-python prepare_data_for_training.py --all_labels="$all_labels" -l "$all_labels" -i $videos_bucket_folder -t '["14_tim"]' -o $dataset_bucket -m $model_name --remove_movement --search_frames_on_path=../ARThermal
+python prepare_data_for_training.py --all_labels="$all_labels" -l "$all_labels" -i $videos_bucket_folder -t '["14_tim"]' -o $dataset_bucket -m $model_name --remove_movement #--search_frames_on_path=../ARThermal
 
 rm $full_dataset -rf
 
