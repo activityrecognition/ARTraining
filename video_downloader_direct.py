@@ -1,7 +1,19 @@
 #!/usr/bin/env python
 import requests, os, sys, getopt, ast
 from tqdm import tqdm
+import boto
+from boto.s3.key import Key
+from multiprocessing.dummy import Pool as ThreadPool 
 
+AWS_ACCESS_KEY_ID = 'AKIAJVS4XZMMG4M44KIQ'     # enter your access key id
+AWS_SECRET_ACCESS_KEY = '5Rhvbqbt/nKVfun01njKNNJzXDPvinuTKzbNCEdn' # enter y$
+bucket_name = 'verzusdev'
+
+# connect to the bucket
+conn = boto.connect_s3(AWS_ACCESS_KEY_ID,
+                AWS_SECRET_ACCESS_KEY)
+bucket = conn.get_bucket(bucket_name)
+    
 requests.packages.urllib3.disable_warnings()
 
 BASE_URL = "http://thermix-server:8000/api/v1/"
@@ -28,6 +40,8 @@ default_thermal_image_modes = ["4_tim"]
 default_order_by_semantic = False
 
 default_incremental_download = False
+
+default_workers = 4
 
 def login(email, password):
     if not email or not password:
@@ -220,11 +234,19 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
     video_urls.reverse()
     return video_urls
 
+def donwload_video(source_and_dest):
+    source,dest = *source_and_dest
+
+    print "Getting file:",source,"from:",dest
+    k = bucket.get_key(source)
+    k.get_contents_to_filename(dest)
+    
 def download_videos_of_group(videos_urls, group_name, group_id, output_dir, order_by_semantic):
     group_dir = os.path.join(output_dir, group_name)
     if not os.path.exists(group_dir):
         os.makedirs(group_dir)
 
+    #downloads = []
     for thermal_image_mode, semantic, orientation, url in videos_urls:
         if order_by_semantic:
             destination_dir = os.path.join(group_dir, semantic, orientation, thermal_image_mode)
@@ -241,10 +263,16 @@ def download_videos_of_group(videos_urls, group_name, group_id, output_dir, orde
         if os.path.exists(filepath):
             continue
 
-        response = requests.get(url, stream=True)
-        with open(filepath, "wb") as handle:
-            for data in tqdm(response.iter_content()):
-                handle.write(data)
+        bucket_path = url.split("/",3)[-1].replace("%3A",":")
+        
+        #downloads.append((bucket_path, filename))
+        print "Getting file:",filepath,"from:",bucket_path
+        k = bucket.get_key(bucket_path)
+        k.get_contents_to_filename(filepath)
+        #response = requests.get(url, stream=True)
+        #with open(filepath, "wb") as handle:
+        #    for data in tqdm(response.iter_content()):
+        #        handle.write(data)
 
 def download_files_from_groups(email=default_email,
                                password=default_password,

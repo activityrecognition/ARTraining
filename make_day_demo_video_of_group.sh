@@ -40,10 +40,10 @@ to_day=$5
 #DO NOT MODIFY BELOW THIS LINE
 
 #folder where raw frames without movement will be saved
-frames_dir=/media/Gui2/thermix/ARThermal/frames_no_movement/"$thermix_group"_frames_no_movement
+frames_dir=../ARThermal/frames_no_movement/"$thermix_group"_frames_no_movement
 
 #folder where the ccv model is located
-model_folder=/media/Gui2/thermix/ARTraining/trained_models/$model_name
+model_folder=./trained_models/$model_name
 
 #ccv model name
 model_path=$model_folder/$model_name.sqlite3
@@ -54,12 +54,8 @@ model_results_file=$model_folder/"$thermix_group"_classify.txt
 all_labels='["person","background","'"$thermix_group"'"]'
 
 if [ $download_videos == true ]; then
-python video_downloader.py -o $videos_folder -e $user_owner_email -l '[]' -g '["'"$thermix_group"'"]' -t '["'"$thermal_tim"'"]' --incremental
+python video_downloader_direct.py -o $videos_folder -e $user_owner_email -l '[]' -g '["'"$thermix_group"'"]' -t '["'"$thermal_tim"'"]' --incremental
 fi
-
-for day in `seq $from_day $to_day` ; do
-
-echo day_"$day"
 
 if [ $has_to_generate_frames == true ]; then
 
@@ -73,6 +69,10 @@ python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_
 fi
 
 exit
+
+for day in `seq $from_day $to_day` ; do
+
+echo day_"$day"
 
 python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["'"$thermal_tim"'"]' -o $frames_dir -m thermix_1 --only_dataset --day="$day"
 
