@@ -41,7 +41,7 @@ default_order_by_semantic = False
 
 default_incremental_download = False
 
-default_workers = 4
+default_workers = 6
 
 def login(email, password):
     if not email or not password:
@@ -62,10 +62,19 @@ def get_groups_of_user_with_token(token):
     non_member_groups = 0
     groups = []
     while len(groups) < total_number_of_groups-non_member_groups:
-        data = requests.get('%sgroups/' % (BASE_URL),
-                            verify=False,
-                            params={"page":page_number},
-                            headers={'Authorization':'Token %s' % token});
+        # try 3 times to avoid errors
+        for i in range(3):
+            try:
+                data = requests.get('%sgroups/' % (BASE_URL),
+                                    verify=False,
+                                    params={"page":page_number},
+                                    headers={'Authorization':'Token %s' % token});
+                if data.status_code == 200:
+                    break
+            except Exception as e:
+                print e
+                print "Error getting groups: trying again (%d)"%i
+                
         if data.status_code == 200:
             json = data.json()
             total_number_of_groups = json["count"]
@@ -111,10 +120,21 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
     finish_incremental = False
     while len(video_urls) < total_number_of_videos+extra_videos_count and \
           (not incremental or not finish_incremental):
-        data=requests.get('%schats/verzus/%d/videos/' % (BASE_URL, group_id),
-                          verify=False,
-                          params={"page":page_number},
-                          headers={'Authorization':'Token %s' % token})
+        # try 3 times to avoid errors
+        for i in range(3):    
+            try:
+                data=requests.get('%schats/verzus/%d/videos/' % (BASE_URL, group_id),
+                                  verify=False,
+                                  params={"page":page_number},
+                                  headers={'Authorization':'Token %s' % token})
+                
+                if data.status_code == 200:
+                    break
+            except Exception as e:
+                print e
+                print "Error getting urls: trying again (%d)"%i
+                
+            
         if data.status_code == 200:
             json = data.json()
             total_number_of_videos = json["count"]
@@ -235,18 +255,18 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
     return video_urls
 
 def donwload_video(source_and_dest):
-    source,dest = *source_and_dest
+    source,dest = source_and_dest
 
-    print "Getting file:",source,"from:",dest
+    print "Getting file:",dest,"from:",source
     k = bucket.get_key(source)
     k.get_contents_to_filename(dest)
     
-def download_videos_of_group(videos_urls, group_name, group_id, output_dir, order_by_semantic):
+def download_videos_of_group(videos_urls, group_name, group_id, output_dir, order_by_semantic, workers):
     group_dir = os.path.join(output_dir, group_name)
     if not os.path.exists(group_dir):
         os.makedirs(group_dir)
 
-    #downloads = []
+    downloads = []
     for thermal_image_mode, semantic, orientation, url in videos_urls:
         if order_by_semantic:
             destination_dir = os.path.join(group_dir, semantic, orientation, thermal_image_mode)
@@ -265,14 +285,25 @@ def download_videos_of_group(videos_urls, group_name, group_id, output_dir, orde
 
         bucket_path = url.split("/",3)[-1].replace("%3A",":")
         
-        #downloads.append((bucket_path, filename))
-        print "Getting file:",filepath,"from:",bucket_path
-        k = bucket.get_key(bucket_path)
-        k.get_contents_to_filename(filepath)
+        downloads.append((bucket_path, filepath))
+        
+        #print "Getting file:",filepath,"from:",bucket_path
+        #k = bucket.get_key(bucket_path)
+        #k.get_contents_to_filename(filepath)
         #response = requests.get(url, stream=True)
         #with open(filepath, "wb") as handle:
         #    for data in tqdm(response.iter_content()):
         #        handle.write(data)
+        
+    pool = ThreadPool(workers) 
+
+    # Open the urls in their own threads
+    # and return the results
+    pool.map(donwload_video, downloads)
+    #close the pool and wait for the work to finish 
+    pool.close() 
+    pool.join() 
+        
 
 def download_files_from_groups(email=default_email,
                                password=default_password,
@@ -281,7 +312,8 @@ def download_files_from_groups(email=default_email,
                                thermal_image_modes=default_thermal_image_modes,
                                labels_in_groups_to_download=default_labels_in_groups_to_download,
                                order_by_semantic=default_order_by_semantic,
-                               incremental_download=default_incremental_download):
+                               incremental_download=default_incremental_download,
+                               workers=default_workers):
     token = login(email, password)
     if not token:
         raise "email and/or password does not match a valid user"
@@ -334,7 +366,7 @@ def download_files_from_groups(email=default_email,
 
             print "urls of group %s ok" % group_name.encode('ascii', 'ignore')
 
-            download_videos_of_group(video_urls, group_name, group_id, output_dir, order_by_semantic)
+            download_videos_of_group(video_urls, group_name, group_id, output_dir, order_by_semantic, workers)
         except Exception as e:
             print e
             print "error getting video urls of group %s" % group_name.encode('ascii', 'ignore')
@@ -345,9 +377,9 @@ def download_files_from_groups(email=default_email,
 def main(argv):
     new_config = {}
     try:
-        opts, args = getopt.getopt(argv,"he:p:g:o:l:t:",["help","email=","password=","groups=",
+        opts, args = getopt.getopt(argv,"he:p:g:o:l:t:w:",["help","email=","password=","groups=",
                                                          "output=","labels=","thermal_modes=","order_by_semantic", 
-                                                         "incremental"])
+                                                         "incremental","workers="])
     except getopt.GetoptError:
         print """video_downloader.py -e <email> -p <password> -g '["<groupName1>","<groupName2>"]' """ + \
               """-o <outputDir> -l '["<groupName1>","<groupName2>"]' -t '["4_tim","14_tim"]' --incremental"""
@@ -373,6 +405,8 @@ def main(argv):
             new_config["order_by_semantic"] = True
         elif opt in ("--incremental"):
             new_config["incremental_download"] = True
+        elif opt in ("-w","--workers"):
+            new_config["workers"] = int(arg)
             
     download_files_from_groups(**new_config)
 
