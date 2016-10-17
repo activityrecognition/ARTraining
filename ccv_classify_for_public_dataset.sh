@@ -15,10 +15,10 @@ model_name=thermix_42a
 #DO NOT MODIFY BELOW THIS LINE
 
 #folder where raw frames without movement will be saved
-frames_dir=/media/Gui2/thermix/ARThermal/frames_no_movement/"$thermix_group"_frames_no_movement
+frames_dir=/workspace/thermix/ARThermal/frames_no_movement/"$thermix_group"_frames_no_movement
 
 #folder where the ccv model is located
-model_folder=/media/Gui2/thermix/ARTraining/trained_models/$model_name
+model_folder=/workspace/thermix/ARTraining/trained_models/$model_name
 
 #ccv model name
 model_path=$model_folder/$model_name.sqlite3
@@ -30,11 +30,11 @@ all_labels='["person","background","'"$thermix_group"'"]'
 
 python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -t '["'"$thermal_tim"'"]' -o $frames_dir -m thermix_1 --only_dataset --only_first_frame_in_dataset
 
-gpu_is_busy=$(nvidia-smi | grep ./cnnclassify | wc -l)
+gpu_is_busy=$(nvidia-smi | grep ./cnnclassify_for_public_dataset | wc -l)
 while [ $gpu_is_busy = 2 ]
 do
 sleep 5s
-gpu_is_busy=$(nvidia-smi | grep ./cnnclassify | wc -l)
+gpu_is_busy=$(nvidia-smi | grep ./cnnclassify_for_public_dataset | wc -l)
 done
 
 if [ -f $model_results_file ]; then

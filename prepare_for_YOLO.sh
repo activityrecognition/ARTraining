@@ -14,13 +14,13 @@ output_videos=$2
 python video_downloader_direct.py -e $email -g '["'"$group_name"'"]' -t '["15_tim"]' -o $output_videos -l '[]' --incremental
 
 #for generating frames
-python prepare_data_for_training.py --all_labels='["person","background","'"$group_name"'"]' -l '["'"$group_name"'"]' -i $output_videos -t '["15_tim"]' -o ../ARThermal/"$group_name"_frames_no_movement -m thermix_1 --no_resize
+python prepare_data_for_training.py --all_labels='["person","background","'"$group_name"'"]' -l '["'"$group_name"'"]' -i $output_videos -t '["15_tim"]' -o ../ARThermal/frames_no_movement/"$group_name"_frames_no_movement -m thermix_1 --no_resize
 
-sorted_frame_list=../ARThermal/"$group_name"_frames_no_movement/15_tim/sorted_frames.txt
+sorted_frame_list=../ARThermal/frames_no_movement/"$group_name"_frames_no_movement/15_tim/sorted_frames.txt
 
 # list frame paths in a file excluding black frames
 output_file="$sorted_frame_list" \
-dataset_dir=../ARThermal/"$group_name"_frames_no_movement \
+dataset_dir=../ARThermal/frames_no_movement/"$group_name"_frames_no_movement \
 tim=15_tim \
 category=3 \
 runipy get_sorted_list_of_frames.ipynb

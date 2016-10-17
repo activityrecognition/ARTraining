@@ -41,7 +41,7 @@ default_order_by_semantic = False
 
 default_incremental_download = False
 
-default_workers = 6
+default_workers = 8
 
 def login(email, password):
     if not email or not password:
