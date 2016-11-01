@@ -77,7 +77,8 @@ print {g:len(groups[g]) for g in groups.keys()}
 
 import random
 
-def generate_training_validation_dataset(training_proportion=0.8, fold_nr=0, fold_path="./tf_folds/",
+def generate_training_validation_dataset(training_proportion=0.8, fold_nr=0, 
+                                         fold_path="/workspace/data/thermix_data/tf_base_dataset/tf_folds/",
                                          dataset_root="/workspace/data/thermix_data/tf_base_dataset/14_tim"):
     training = []
     val = []
@@ -150,20 +151,22 @@ training_file,val_file = generate_training_validation_dataset()
 
 # In[7]:
 
-#from tflearn.data_utils import build_hdf5_image_dataset
+from tflearn.data_utils import build_hdf5_image_dataset
 
-#build_hdf5_image_dataset(training_file, (257,257), output_path='./tf_folds/0/training.h5',
-#                             mode='file', categorical_labels=True,
-#                             normalize=True, grayscale=True)
+build_hdf5_image_dataset(training_file, (257,257), 
+                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/0/training.h5',
+                             mode='file', categorical_labels=True,
+                             normalize=True, grayscale=True)
 
 
 # In[8]:
 
-#from tflearn.data_utils import build_hdf5_image_dataset
+from tflearn.data_utils import build_hdf5_image_dataset
 
-#build_hdf5_image_dataset(val_file, (257,257), output_path='./tf_folds/0/validation.h5',
-#                             mode='file', categorical_labels=True,
-#                             normalize=True, grayscale=True)
+build_hdf5_image_dataset(val_file, (257,257), 
+                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/0/validation.h5',
+                             mode='file', categorical_labels=True,
+                             normalize=True, grayscale=True)
 
 
 # In[9]:
@@ -226,19 +229,17 @@ trainer = tflearn.Trainer(train_ops=trainop,
                          )
 
 import h5py
-h5f = h5py.File('./tf_folds/0/training.h5')
+h5_dataset_root = "/workspace/data/thermix_data/tf_base_dataset"
+h5f = h5py.File(os.path.join(h5_dataset_root,'tf_folds/0/training.h5'))
 X = h5f['X']
 Y = h5f['Y']
 
-v_h5f = h5py.File('./tf_folds/0/validation.h5')
+v_h5f = h5py.File(os.path.join(h5_dataset_root,'tf_folds/0/validation.h5'))
 v_X = v_h5f['X']
 v_Y = v_h5f['Y']
 
-x_ph = tf.placeholder(tf.float32, shape=(None, 227, 227))
-y_ph = tf.placeholder(tf.float32, [None, 5])
-
 trainer.fit({X_ph:X, Y_ph:Y},
-            val_feed_dicts={x_ph:v_X,y_ph:v_Y},
+            val_feed_dicts={X_ph:v_X,Y_ph:v_Y},
             shuffle_all=True,
             n_epoch=epochs,
             show_metric=True,
