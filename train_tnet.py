@@ -151,22 +151,22 @@ training_file,val_file = generate_training_validation_dataset()
 
 # In[7]:
 
-from tflearn.data_utils import build_hdf5_image_dataset
+#from tflearn.data_utils import build_hdf5_image_dataset
 
-build_hdf5_image_dataset(training_file, (257,257), 
-                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/0/training.h5',
-                             mode='file', categorical_labels=True,
-                             normalize=True, grayscale=True)
+#build_hdf5_image_dataset(training_file, (257,257), 
+#                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/0/training.h5',
+#                             mode='file', categorical_labels=True,
+#                             normalize=True, grayscale=True)
 
 
 # In[8]:
 
-from tflearn.data_utils import build_hdf5_image_dataset
+#from tflearn.data_utils import build_hdf5_image_dataset
 
-build_hdf5_image_dataset(val_file, (257,257), 
-                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/0/validation.h5',
-                             mode='file', categorical_labels=True,
-                             normalize=True, grayscale=True)
+#build_hdf5_image_dataset(val_file, (257,257), 
+#                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/0/validation.h5',
+#                             mode='file', categorical_labels=True,
+#                             normalize=True, grayscale=True)
 
 
 # In[9]:
