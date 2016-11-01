@@ -1,0 +1,9 @@
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A21%3A02.000000_1/0_0.png 1 0.853051
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A21%3A02.000000_1/0_1.png 1 0.622594
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A21%3A02.000000_1/0_2.png 1 0.649598
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A03%3A13.000000_1/1_0.png 3 0.875188
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A03%3A13.000000_1/1_2.png 3 0.951778
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A03%3A13.000000_1/1_1.png 3 0.903979
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A03%3A13.000000_1/0_0.png 3 0.869993
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A03%3A13.000000_1/0_1.png 3 0.849933
+14_tim/3/Users_pablo.pusiol_unkown_2016-10-19_00%3A03%3A13.000000_1/0_2.png 3 0.854270

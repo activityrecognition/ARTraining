@@ -34,27 +34,45 @@
 #./prepare_for_YOLO.sh Erika_001 ../ARThermal/videos_black5 black5@bramblexpress.com
 #t3 one per section
 #./prepare_for_YOLO.sh Marge_008 ../ARThermal/videos_golden5s golden5s@bramblexpress.com
-./prepare_for_YOLO.sh April_001 ../ARThermal/videos_ipod5 ipod@ipod.com
-./prepare_for_YOLO.sh Erika_002 ../ARThermal/videos_black5 black5@bramblexpress.com
+#./prepare_for_YOLO.sh April_001 ../ARThermal/videos_ipod5 ipod@ipod.com
+#./prepare_for_YOLO.sh Erika_002 ../ARThermal/videos_black5 black5@bramblexpress.com
 #pending
-./prepare_for_YOLO.sh Marge_009 ../ARThermal/videos_golden5s golden5s@bramblexpress.com
-./prepare_for_YOLO.sh April_002 ../ARThermal/videos_ipod5 ipod@ipod.com
-./prepare_for_YOLO.sh Erika_003 ../ARThermal/videos_black5 black5@bramblexpress.com
-./prepare_for_YOLO.sh Marge_010 ../ARThermal/videos_golden5s golden5s@bramblexpress.com
+#./prepare_for_YOLO.sh Marge_009 ../ARThermal/videos_golden5s golden5s@bramblexpress.com
+#./prepare_for_YOLO.sh April_002 ../ARThermal/videos_ipod5 ipod@ipod.com
+#./prepare_for_YOLO.sh Erika_003 ../ARThermal/videos_black5 black5@bramblexpress.com
+#./prepare_for_YOLO.sh Marge_010 ../ARThermal/videos_golden5s golden5s@bramblexpress.com
 
 #t4 end
-./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 April_001 ipod@ipod.com 1 1 true true '["14_tim"]' 
-./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_008 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
-./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Erika_002 black5@bramblexpress.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 April_001 ipod@ipod.com 1 1 true true '["14_tim"]' 
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_008 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Erika_002 black5@bramblexpress.com 1 1 true true '["14_tim"]'
 
 #t4 one per session
-./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 April_002 ipod@ipod.com 1 1 true true '["14_tim"]'
-./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_009 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
-./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Erika_003 black5@bramblexpress.com 1 1 true true '["14_tim"]'
-./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_010 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 April_002 ipod@ipod.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_009 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Erika_003 black5@bramblexpress.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_010 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
 
 ##### PENDING #####
 ./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_010 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+echo "Marge_010" | tee "../downloads_log.txt"
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Erika_004 black5@bramblexpress.com 1 1 true true '["14_tim"]'
+./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_012 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+echo "Marge_012" | tee "../downloads_log.txt"
+./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_013 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+echo "Marge_013" | tee "../downloads_log.txt"
+./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_014 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+echo "Marge_014" | tee "../downloads_log.txt"
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 April_002 ipod@ipod.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_ipod5 April_003 ipod@ipod.com 1 1 true true '["14_tim"]'
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Erika_005 black5@bramblexpress.com 1 1 true true '["14_tim"]'
+./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_015 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+echo "Marge_015" | tee "../downloads_log.txt"
+#./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Erika_006 black5@bramblexpress.com 1 1 true true '["14_tim"]'
+./make_day_demo_video_of_group.sh ../ARThermal/videos_golden5s Marge_016 golden5s@bramblexpress.com 1 1 true true '["14_tim"]'
+echo "Marge_016" | tee "../downloads_log.txt"
+./make_day_demo_video_of_group.sh ../ARThermal/videos_black5 Fiona_002 black5@bramblexpress.com 1 1 true true '["14_tim"]'
+echo "Fiona_002" | tee "../downloads_log.txt"
 
 ### NOT IN DB YET ###
 #./prepare_for_YOLO.sh Erika_004 ../ARThermal/videos_black5 black5@bramblexpress.com

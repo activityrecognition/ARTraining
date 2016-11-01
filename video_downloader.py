@@ -4,7 +4,8 @@ from tqdm import tqdm
 
 requests.packages.urllib3.disable_warnings()
 
-BASE_URL = "http://thermix-server:8000/api/v1/"
+#BASE_URL = "http://thermix-server:8000/api/v1/"
+BASE_URL = "https://dev.verzus.us.bramblexpress.com/api/v1/"
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 ### usuario guido:
@@ -97,10 +98,13 @@ def get_video_urls_of_group_with_id(group_id, token, thermal_image_modes,
     finish_incremental = False
     while len(video_urls) < total_number_of_videos+extra_videos_count and \
           (not incremental or not finish_incremental):
-        data=requests.get('%schats/verzus/%d/videos/' % (BASE_URL, group_id),
-                          verify=False,
-                          params={"page":page_number},
-                          headers={'Authorization':'Token %s' % token})
+        try:
+            data=requests.get('%schats/verzus/%d/videos/' % (BASE_URL, group_id),
+                              verify=False,
+                              params={"page":page_number},
+                              headers={'Authorization':'Token %s' % token})
+        except:
+            break
         if data.status_code == 200:
             json = data.json()
             total_number_of_videos = json["count"]

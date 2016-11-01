@@ -29,7 +29,7 @@ do
         
         size_param="--no_resize"
         if [ $video_folder == "videos_black5" ]; then
-            size_param='--crop_frames_to_rect=(0,0,120,160)'
+            size_param='--no_resize --crop_frames_to_rect=(0,0,120,160)'
         fi
         
         has_files=$(ls $output_dir/$thermix_group/14_tim/3 | wc -l)
