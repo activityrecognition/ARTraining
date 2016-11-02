@@ -267,7 +267,7 @@ loss = tflearn.categorical_crossentropy(net, Y_ph)
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(net, 1), tf.argmax(Y_ph, 1)), tf.float32), name='Accuracy')
 optimizer = tflearn.optimizers.Adam(learning_rate=0.001)
 step = tflearn.variable("step", initializer='zeros', shape=[])
-batch_size = 8
+batch_size = 512
 optimizer.build(step_tensor=step)
 optim_tensor = optimizer.get_tensor()
 epochs = 500
