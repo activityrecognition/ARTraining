@@ -175,10 +175,11 @@ training_file,val_file = generate_training_validation_dataset(fold_nr=1)
 #save training dataset in h5py format
 from tflearn.data_utils import build_hdf5_image_dataset
 
-build_hdf5_image_dataset(training_file, (257,257), 
-                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/1/training.h5',
-                             mode='file', categorical_labels=True,
-                             normalize=False, grayscale=True)
+if not os.path.exists('/workspace/data/thermix_data/tf_base_dataset/tf_folds/1/training.h5'):
+    build_hdf5_image_dataset(training_file, (257,257), 
+                             output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/1/training.h5',
+                                 mode='file', categorical_labels=True,
+                                 normalize=False, grayscale=True)
 
 
 # In[ ]:
@@ -186,10 +187,11 @@ build_hdf5_image_dataset(training_file, (257,257),
 #save validation dataset in h5py format
 from tflearn.data_utils import build_hdf5_image_dataset
 
-build_hdf5_image_dataset(val_file, (257,257), 
-                         output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/1/validation.h5',
-                             mode='file', categorical_labels=True,
-                             normalize=False, grayscale=True)
+if not os.path.exists('/workspace/data/thermix_data/tf_base_dataset/tf_folds/1/validation.h5'):
+    build_hdf5_image_dataset(val_file, (257,257), 
+                             output_path='/workspace/data/thermix_data/tf_base_dataset/tf_folds/1/validation.h5',
+                                 mode='file', categorical_labels=True,
+                                 normalize=False, grayscale=True)
 
 
 # In[ ]:
@@ -216,7 +218,7 @@ def model(input_placeholder=None):
     network = conv_2d(network, 384, 3, activation='relu')
     network = conv_2d(network, 256, 3, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = dropout(network, 0.5)
+    network = dropout(network, 0.8)
     #network = local_response_normalization(network)
     network = fully_connected(network, 5, activation='softmax')
 
