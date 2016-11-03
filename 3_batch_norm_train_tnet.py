@@ -224,7 +224,7 @@ from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.normalization import batch_normalization#local_response_normalization
 #from tflearn.layers.estimator import regression
 
-def model(input_placeholder=None, class_weights=np.array([1,1,1,1,1])):
+def model(input_placeholder=None):
     tf_data = input_placeholder or tf.placeholder(tf.float32, shape=(None, 224, 224))
     network = input_data(placeholder=tf_data)
     
