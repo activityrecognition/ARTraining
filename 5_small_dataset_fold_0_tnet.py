@@ -88,7 +88,7 @@ print {g:len(groups[g]) for g in groups.keys()}
 
 # In[30]:
 
-fold_nr = 2
+fold_nr = 0
 fold_path="/workspace/data/thermix_data/tf_base_dataset/tf_folds/"
 training_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "training.h5")
 val_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "validation.h5")
@@ -106,7 +106,8 @@ def generate_training_validation_dataset(training_proportion=0.8, fold_nr=fold_n
     val = []
     
     for c in dataset_acted.keys():
-        training.extend([(v,c) for v in dataset_acted[c]])
+        pass
+        #training.extend([(v,c) for v in dataset_acted[c]])
         #print len(dataset_acted[c])
         #subset = random.sample(dataset_acted[c], (len(dataset_acted[c])*0.8))
         #training.extend([(v,c) for v in subset])
@@ -136,7 +137,7 @@ def generate_training_validation_dataset(training_proportion=0.8, fold_nr=fold_n
 
     while min_class_len != max(count_training):
         v,c = random.choice(frames_training)
-        c_id = int(c)-1
+        c_id = c
         if count_training[c_id] > min_class_len:
             frames_training.remove((v,c))
             count_training[c_id] -=1
@@ -201,7 +202,7 @@ if not os.path.exists(training_h5py_path):
     build_hdf5_thermal_image_dataset(training_file, (224,224), 
                          output_path=training_h5py_path,
                              mode='file', categorical_labels=True,
-                             normalize=True, grayscale=True)
+                             normalize=False, grayscale=True)
 
 
 # In[ ]:
@@ -213,7 +214,7 @@ if not os.path.exists(val_h5py_path):
     build_hdf5_thermal_image_dataset(val_file, (224,224), 
                          output_path=val_h5py_path,
                              mode='file', categorical_labels=True,
-                             normalize=True, grayscale=True)
+                             normalize=False, grayscale=True)
 
 
 # In[ ]:
@@ -225,8 +226,13 @@ from tflearn.layers.normalization import batch_normalization#local_response_norm
 #from tflearn.layers.estimator import regression
 
 def model(input_placeholder=None):
+    # Real-time data augmentation
+    img_aug = tflearn.ImageAugmentation()
+    # Random flip an image
+    img_aug.add_random_flip_leftright()
+    
     tf_data = input_placeholder or tf.placeholder(tf.float32, shape=(None, 224, 224))
-    network = input_data(placeholder=tf_data)
+    network = input_data(placeholder=tf_data, data_augmentation=img_aug)
     
     network = reshape(network, [-1,224,224,1])
     
@@ -267,7 +273,7 @@ loss = tflearn.categorical_crossentropy(net, Y_ph)
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(net, 1), tf.argmax(Y_ph, 1)), tf.float32), name='Accuracy')
 optimizer = tflearn.optimizers.Adam(learning_rate=0.001)
 step = tflearn.variable("step", initializer='zeros', shape=[])
-batch_size = 256
+batch_size = 200
 optimizer.build(step_tensor=step)
 optim_tensor = optimizer.get_tensor()
 epochs = 500
