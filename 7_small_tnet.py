@@ -57,6 +57,18 @@ else:
 
 # In[29]:
 
+# discard 80x60 camera videos
+#old_resolution = []
+#for class_id in dataset_real.keys():
+#    videos = dataset_real[class_id]
+#    for v in videos:
+#        if "black5" in v:
+#            old_resolution.append((v,class_id))
+
+#print "80x60 resolution:", len(old_resolution)
+#for v,c in old_resolution:
+#    dataset_real[c].remove(v)
+            
 # discard videos that are corrupted.
 not_found = []
 for class_id in dataset_real.keys():
@@ -88,7 +100,7 @@ print {g:len(groups[g]) for g in groups.keys()}
 
 # In[30]:
 
-fold_nr = 1
+fold_nr = 0
 fold_path="/workspace/data/thermix_data/tf_base_dataset/tf_folds/"
 training_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "training.h5")
 val_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "validation.h5")
@@ -106,15 +118,14 @@ def generate_training_validation_dataset(training_proportion=0.8, fold_nr=fold_n
     val = []
     
     for c in dataset_acted.keys():
-        pass
-        training.extend([(v,c) for v in dataset_acted[c]])
+        training.extend(random.sample([(v,c) for v in dataset_acted[c]], len(dataset_acted[c])*0.2))
         #print len(dataset_acted[c])
         #subset = random.sample(dataset_acted[c], (len(dataset_acted[c])*0.8))
         #training.extend([(v,c) for v in subset])
         #val.extend([(v,c) for v in dataset_acted[c] if v not in subset])
     
     #val = ['Anne',"Luke","Fiona","Irene", 'Julien', 'Victor']
-    subset = ["Peter", 'Marge', "Henry", "Rick", 'Charles', ] # random.sample(groups.keys(), int(len(groups.keys())*0.5))
+    subset = ["Peter", 'Marge', "Henry", "Rick", 'Charles'] # random.sample(groups.keys(), int(len(groups.keys())*0.5))
     [training.extend(groups[g]) for g in subset]
     [val.extend(groups[g]) for g in groups.keys() if g not in subset]
     
@@ -236,9 +247,9 @@ def model(input_placeholder=None):
     
     network = reshape(network, [-1,224,224,1])
     
-    network = conv_2d(network, 96, 7, strides=2, activation='relu')
-    network = max_pool_2d(network, 3, strides=2)
-    network = batch_normalization(network)
+    #network = conv_2d(network, 96, 7, strides=2, activation='relu')
+    #network = max_pool_2d(network, 3, strides=2)
+    #network = batch_normalization(network)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 256, 5, strides=2, activation='relu')
@@ -246,7 +257,7 @@ def model(input_placeholder=None):
     network = batch_normalization(network)
     
     #network = local_response_normalization(network)
-    network = conv_2d(network, 384, 3, activation='relu')
+    #network = conv_2d(network, 384, 3, activation='relu')
     network = conv_2d(network, 384, 3, activation='relu')
     
     network = conv_2d(network, 256, 3, activation='relu')
@@ -273,7 +284,7 @@ loss = tflearn.categorical_crossentropy(net, Y_ph)
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(net, 1), tf.argmax(Y_ph, 1)), tf.float32), name='Accuracy')
 optimizer = tflearn.optimizers.Adam(learning_rate=0.001)
 step = tflearn.variable("step", initializer='zeros', shape=[])
-batch_size = 200
+batch_size = 256
 optimizer.build(step_tensor=step)
 optim_tensor = optimizer.get_tensor()
 epochs = 500

@@ -224,12 +224,14 @@ from tflearn.layers.core import input_data, dropout, fully_connected,reshape
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.normalization import batch_normalization#local_response_normalization
 #from tflearn.layers.estimator import regression
+from training_utils import ThermalImageAugmentation
 
 def model(input_placeholder=None):
     # Real-time data augmentation
-    img_aug = tflearn.ImageAugmentation()
+    img_aug = ThermalImageAugmentation()
     # Random flip an image
     img_aug.add_random_flip_leftright()
+    img_aug.add_random_temperature_fluctuation(max_degrees_change=2)
     
     tf_data = input_placeholder or tf.placeholder(tf.float32, shape=(None, 224, 224))
     network = input_data(placeholder=tf_data, data_augmentation=img_aug)
@@ -273,7 +275,7 @@ loss = tflearn.categorical_crossentropy(net, Y_ph)
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(net, 1), tf.argmax(Y_ph, 1)), tf.float32), name='Accuracy')
 optimizer = tflearn.optimizers.Adam(learning_rate=0.001)
 step = tflearn.variable("step", initializer='zeros', shape=[])
-batch_size = 200
+batch_size = 256
 optimizer.build(step_tensor=step)
 optim_tensor = optimizer.get_tensor()
 epochs = 500

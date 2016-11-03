@@ -5,6 +5,25 @@ from PIL import Image
 import pickle
 import csv
 from tflearn.data_utils import *
+from tflearn.data_augmentation import ImageAugmentation
+
+class ThermalImageAugmentation(ImageAugmentation):
+    def add_random_temperature_fluctuation(self,max_degrees_change=2):
+        """ add_random_flip_leftright.
+        Randomly flip an image (left to right).
+        Returns:
+            Nothing.
+        """
+        self.methods.append(self._random_temperature_fluctuation)
+        self.args.append([max_degrees_change])
+
+    def _random_temperature_fluctuation(self, batch, max_degrees_change=2):
+        for i in range(len(batch)):
+            change = random.choice(np.arange(-max_degrees_change,max_degrees_change+1,0.5))
+            if change != 0:
+                batch[i] = (2*change) + batch[i]
+        return batch
+
 def build_hdf5_thermal_image_dataset(target_path, image_shape, output_path='dataset.h5',
                                      mode='file', categorical_labels=True,
                                      normalize=True, grayscale=False,

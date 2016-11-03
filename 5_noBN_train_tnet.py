@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 # In[3]:
@@ -238,12 +237,12 @@ def model(input_placeholder=None):
     
     network = conv_2d(network, 96, 7, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 256, 5, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 384, 3, activation='relu')
@@ -251,7 +250,7 @@ def model(input_placeholder=None):
     
     network = conv_2d(network, 256, 3, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     
     #network = local_response_normalization(network)
     network = fully_connected(network, 5, activation='softmax')
