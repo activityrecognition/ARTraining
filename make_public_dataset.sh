@@ -4,6 +4,8 @@
 video_folders="videos_golden5s videos_black5 videos_ipod5"
 #video_folders="videos_black5"
 output_dir=../ARThermal/public_dataset
+
+output_dir2=../ARThermal/thermset_v1
 for video_folder in $video_folders
 do
     video_folder_path=../ARThermal/$video_folder
@@ -33,7 +35,7 @@ do
         fi
         
         has_files=$(ls $output_dir/$thermix_group/14_tim/3 | wc -l)
-        if [ ! -d $output_dir/$thermix_group ] || [ "$has_files" != "0" ]; then
+        if [ ! -d $output_dir/$thermix_group ] || [ "$has_files" != "0" ] || [ ! -d $output_dir2/$thermix_group ]; then
         python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -i $video_folder_path -t '["14_tim"]' -o $output_dir/$thermix_group -m thermix_1 --remove_movement $size_param --use_frame_id
           
         ./ccv_classify_for_public_dataset.sh $thermix_group

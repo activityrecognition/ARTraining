@@ -103,7 +103,7 @@ print {g:len(groups[g]) for g in groups.keys()}
 fold_nr = 2
 fold_path="/workspace/data/thermix_data/tf_base_dataset/tf_folds/"
 training_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "training.h5")
-val_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "validation.h5")
+val_h5py_path=os.path.join(fold_path,"%d"%1, "validation.h5")
 
 
 # In[33]:
@@ -210,7 +210,7 @@ for l in random.sample(lines, 10):
 from training_utils import build_hdf5_thermal_image_dataset
 
 if not os.path.exists(training_h5py_path):
-    build_hdf5_thermal_image_dataset(training_file, (257,257), 
+    build_hdf5_thermal_image_dataset(training_file, (224,224), 
                          output_path=training_h5py_path,
                              mode='file', categorical_labels=True,
                              normalize=False, grayscale=True)
@@ -222,7 +222,7 @@ if not os.path.exists(training_h5py_path):
 from training_utils import build_hdf5_thermal_image_dataset
 
 if not os.path.exists(val_h5py_path):
-    build_hdf5_thermal_image_dataset(val_file, (257,257), 
+    build_hdf5_thermal_image_dataset(val_file, (224,224), 
                          output_path=val_h5py_path,
                              mode='file', categorical_labels=True,
                              normalize=False, grayscale=True)
@@ -234,7 +234,7 @@ import tflearn, tensorflow as tf
 from tflearn.layers.core import input_data, dropout, fully_connected,reshape
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.normalization import batch_normalization#local_response_normalization
-#from tflearn.layers.estimator import regression
+from tflearn.layers.estimator import regression
 from training_utils import ThermalImageAugmentation
 
 def model():
@@ -242,7 +242,7 @@ def model():
     img_aug = ThermalImageAugmentation()
     # Random flip an image
     img_aug.add_random_flip_leftright()
-    #img_aug.add_random_temperature_fluctuation(max_degrees_change=2)
+    img_aug.add_random_temperature_fluctuation(max_degrees_change=5)
     img_aug.add_random_blur(sigma_max=0.2)
     img_aug.add_random_crop((224,224))
     
@@ -255,18 +255,22 @@ def model():
     network = conv_2d(network, 96, 7, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = batch_normalization(network)
+    network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 256, 5, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = batch_normalization(network)
+    network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 384, 3, activation='relu')
     network = batch_normalization(network)
+    network = dropout(network, 0.5)
     
     network = conv_2d(network, 384, 3, activation='relu')
     network = batch_normalization(network)
+    network = dropout(network, 0.5)
     
     network = conv_2d(network, 256, 3, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
@@ -281,6 +285,30 @@ def model():
 
 name = datetime.strftime(datetime.now(),'%Y-%m-%d_%H%M%S')
 model_dir = "/workspace/data/thermix_data/tf_training"
+
+net, _ = model()
+net = regression(net, optimizer='adam',
+                     loss='categorical_crossentropy',
+                     learning_rate=0.001)
+batch_size = 256
+epochs = 500
+import h5py
+h5f = h5py.File(training_h5py_path)
+X = h5f['X']
+Y = h5f['Y']
+
+v_h5f = h5py.File(val_h5py_path)
+v_X = v_h5f['X']
+v_Y = v_h5f['Y']
+
+# Training
+model = tflearn.DNN(net, checkpoint_path=os.path.join(model_dir, name, 'checkpoint'),
+                    tensorboard_dir=model_dir,
+                    tensorboard_verbose=0)
+model.fit(X, Y, n_epoch=1000, validation_set=(v_X,v_Y), shuffle=True,
+          show_metric=True, batch_size=batch_size, snapshot_step=False,
+snapshot_epoch=True, run_id=name)
+raise
 
 tf.train.SummaryWriter(model_dir)
 tflearn.config.init_training_mode()
