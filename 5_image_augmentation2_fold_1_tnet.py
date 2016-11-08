@@ -57,18 +57,6 @@ else:
 
 # In[29]:
 
-# discard 80x60 camera videos
-#old_resolution = []
-#for class_id in dataset_real.keys():
-#    videos = dataset_real[class_id]
-#    for v in videos:
-#        if "black5" in v:
-#            old_resolution.append((v,class_id))
-
-#print "80x60 resolution:", len(old_resolution)
-#for v,c in old_resolution:
-#    dataset_real[c].remove(v)
-            
 # discard videos that are corrupted.
 not_found = []
 for class_id in dataset_real.keys():
@@ -100,7 +88,7 @@ print {g:len(groups[g]) for g in groups.keys()}
 
 # In[30]:
 
-fold_nr = 0
+fold_nr = 1
 fold_path="/workspace/data/thermix_data/tf_base_dataset/tf_folds/"
 training_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "training.h5")
 val_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "validation.h5")
@@ -118,14 +106,15 @@ def generate_training_validation_dataset(training_proportion=0.8, fold_nr=fold_n
     val = []
     
     for c in dataset_acted.keys():
-        training.extend(random.sample([(v,c) for v in dataset_acted[c]], len(dataset_acted[c])*0.2))
+        pass
+        training.extend([(v,c) for v in dataset_acted[c]])
         #print len(dataset_acted[c])
         #subset = random.sample(dataset_acted[c], (len(dataset_acted[c])*0.8))
         #training.extend([(v,c) for v in subset])
         #val.extend([(v,c) for v in dataset_acted[c] if v not in subset])
     
     #val = ['Anne',"Luke","Fiona","Irene", 'Julien', 'Victor']
-    subset = ["Peter", 'Marge', "Henry", "Rick", 'Charles'] # random.sample(groups.keys(), int(len(groups.keys())*0.5))
+    subset = ["Peter", 'Marge', "Henry", "Rick", 'Charles', ] # random.sample(groups.keys(), int(len(groups.keys())*0.5))
     [training.extend(groups[g]) for g in subset]
     [val.extend(groups[g]) for g in groups.keys() if g not in subset]
     
@@ -235,21 +224,23 @@ from tflearn.layers.core import input_data, dropout, fully_connected,reshape
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.normalization import batch_normalization#local_response_normalization
 #from tflearn.layers.estimator import regression
+from training_utils import ThermalImageAugmentation
 
 def model(input_placeholder=None):
     # Real-time data augmentation
-    img_aug = tflearn.ImageAugmentation()
+    img_aug = ThermalImageAugmentation()
     # Random flip an image
     img_aug.add_random_flip_leftright()
+    img_aug.add_random_temperature_fluctuation(max_degrees_change=2)
     
     tf_data = input_placeholder or tf.placeholder(tf.float32, shape=(None, 224, 224))
     network = input_data(placeholder=tf_data, data_augmentation=img_aug)
     
     network = reshape(network, [-1,224,224,1])
     
-    #network = conv_2d(network, 96, 7, strides=2, activation='relu')
-    #network = max_pool_2d(network, 3, strides=2)
-    #network = batch_normalization(network)
+    network = conv_2d(network, 96, 7, strides=2, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = batch_normalization(network)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 256, 5, strides=2, activation='relu')
@@ -257,7 +248,7 @@ def model(input_placeholder=None):
     network = batch_normalization(network)
     
     #network = local_response_normalization(network)
-    #network = conv_2d(network, 384, 3, activation='relu')
+    network = conv_2d(network, 384, 3, activation='relu')
     network = conv_2d(network, 384, 3, activation='relu')
     
     network = conv_2d(network, 256, 3, activation='relu')
