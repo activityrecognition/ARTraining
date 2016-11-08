@@ -35,10 +35,14 @@ do
         fi
         
         has_files=$(ls $output_dir/$thermix_group/14_tim/3 | wc -l)
-        if [ ! -d $output_dir/$thermix_group ] || [ "$has_files" != "0" ] || [ ! -d $output_dir2/$thermix_group ]; then
+        if [ ! -d $output_dir/$thermix_group ] || [ "$has_files" != "0" ]; then
+        echo $has_files
+        if [ ! -d $output_dir2/$thermix_group ]; then
+        echo "processing"
         python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -i $video_folder_path -t '["14_tim"]' -o $output_dir/$thermix_group -m thermix_1 --remove_movement $size_param --use_frame_id
           
         ./ccv_classify_for_public_dataset.sh $thermix_group
+        fi
         else 
            video_count=$(ls $video_folder_path/$thermix_group/14_tim | wc -l)
            frame_video_count=$(ls $output_dir/$thermix_group | wc -l)

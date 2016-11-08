@@ -12,8 +12,8 @@ conn = boto.connect_s3(AWS_ACCESS_KEY_ID,
                 AWS_SECRET_ACCESS_KEY)
 bucket = conn.get_bucket(bucket_name)
 
-key_name="thermset_v1.tar"
-file_path="../ARThermal/thermix_dataset_v1.tar"
+key_name="thermset_v1.1.tar"
+file_path="../ARThermal/thermset_v1.1.tar"
 v1 = bucket.new_key(key_name)
 mp = bucket.initiate_multipart_upload(key_name)
 
