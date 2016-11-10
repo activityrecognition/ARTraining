@@ -232,7 +232,7 @@ def model(input_placeholder=None):
     # Random flip an image
     img_aug.add_random_flip_leftright()
     img_aug.add_random_temperature_fluctuation(max_degrees_change=5)
-    img_aug.add_random_blur(sigma_max=2.0)
+    #img_aug.add_random_blur(sigma_max=2.0)
     #img_aug.add_random_crop((224,224))
     
     tf_data = tf.placeholder(tf.float32, shape=(None, 224, 224))
@@ -244,27 +244,27 @@ def model(input_placeholder=None):
     
     network = conv_2d(network, 96, 7, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 256, 5, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 384, 3, activation='relu')
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     network = dropout(network, 0.5)
     
     network = conv_2d(network, 384, 3, activation='relu')
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     network = dropout(network, 0.5)
     
     network = conv_2d(network, 256, 3, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = batch_normalization(network)
+    #network = batch_normalization(network)
     network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
