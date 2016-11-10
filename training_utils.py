@@ -137,3 +137,108 @@ def build_hdf5_thermal_image_dataset(target_path, image_shape, output_path='data
             dataset['Y'][i] = to_categorical([labels[i]], n_classes)[0]
         else:
             dataset['Y'][i] = labels[i]
+            
+class ThermalImagePreloader(ImagePreloader):
+    def __init__(self, array, image_shape, normalize=True, grayscale=False):
+        fn = lambda x: self.preload(x, image_shape, normalize, grayscale)
+        super(ImagePreloader, self).__init__(array, fn)
+
+    def preload(self, path, image_shape, normalize=True, grayscale=False):
+        img = load_image(path)
+        width, height = img.size
+        if width != image_shape[0] or height != image_shape[1]:
+            img = resize_image(img, image_shape[0], image_shape[1])
+        if grayscale:
+            img = img.split()[0]#convert_color(img, 'L')
+        img = pil_to_nparray(img)
+        if normalize:
+            img /= 255.
+        return img
+
+def thermal_image_preloader(target_path, image_shape, mode='file', normalize=True,
+                    grayscale=False, categorical_labels=True,
+                    files_extension=None, filter_channel=False):
+    """ Image PreLoader.
+    Create a python array (`Preloader`) that loads images on the fly (from
+    disk or url). There is two ways to provide image samples 'folder' or
+    'file', see the specifications below.
+    'folder' mode: Load images from disk, given a root folder. This folder
+    should be arranged as follow:
+    ```
+    ROOT_FOLDER -> SUBFOLDER_0 (CLASS 0) -> CLASS0_IMG1.jpg
+                                         -> CLASS0_IMG2.jpg
+                                         -> ...
+                -> SUBFOLDER_1 (CLASS 1) -> CLASS1_IMG1.jpg
+                                         -> ...
+                -> ...
+    ```
+    Note that if sub-folders are not integers from 0 to n_classes, an id will
+    be assigned to each sub-folder following alphabetical order.
+    'file' mode: A plain text file listing every image path and class id.
+    This file should be formatted as follow:
+    ```
+    /path/to/img1 class_id
+    /path/to/img2 class_id
+    /path/to/img3 class_id
+    ```
+    Note that load images on the fly and convert is time inefficient,
+    so you can instead use `build_hdf5_image_dataset` to build a HDF5 dataset
+    that enable fast retrieval (this function takes similar arguments).
+    Examples:
+        ```
+        # Load path/class_id image file:
+        dataset_file = 'my_dataset.txt'
+        # Build the preloader array, resize images to 128x128
+        from tflearn.data_utils import image_preloader
+        X, Y = image_preloader(dataset_file, image_shape=(128, 128),
+                               mode='file', categorical_labels=True,
+                               normalize=True)
+        # Build neural network and train
+        network = ...
+        model = DNN(network, ...)
+        model.fit(X, Y)
+        ```
+    Arguments:
+        target_path: `str`. Path of root folder or images plain text file.
+        image_shape: `tuple (height, width)`. The images shape. Images that
+            doesn't match that shape will be resized.
+        mode: `str` in ['file', 'folder']. The data source mode. 'folder'
+            accepts a root folder with each of his sub-folder representing a
+            class containing the images to classify.
+            'file' accepts a single plain text file that contains every
+            image path with their class id.
+            Default: 'folder'.
+        categorical_labels: `bool`. If True, labels are converted to binary
+            vectors.
+        normalize: `bool`. If True, normalize all pictures by dividing
+            every image array by 255.
+        grayscale: `bool`. If true, images are converted to grayscale.
+        files_extension: `list of str`. A list of allowed image file
+            extension, for example ['.jpg', '.jpeg', '.png']. If None,
+            all files are allowed.
+        filter_channel: `bool`. If true, images which the channel is not 3 should
+            be filter.
+    Returns:
+        (X, Y): with X the images array and Y the labels array.
+    """
+    assert mode in ['folder', 'file']
+    if mode == 'folder':
+        images, labels = directory_to_samples(target_path,
+                                              flags=files_extension, filter_channel=filter_channel)
+    else:
+        with open(target_path, 'r') as f:
+            images, labels = [], []
+            for l in f.readlines():
+                l = l.strip('\n').split()
+                if not files_extension or any(flag in l[0] for flag in files_extension):
+                    if filter_channel:
+                        if get_img_channel(l[0]) != 3:
+                            continue
+                    images.append(l[0])
+                    labels.append(int(l[1]))
+
+    n_classes = np.max(labels) + 1
+    X = ThermalImagePreloader(images, image_shape, normalize, grayscale)
+    Y = LabelPreloader(labels, n_classes, categorical_labels)
+
+    return X, Y
