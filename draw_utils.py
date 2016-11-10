@@ -79,9 +79,6 @@ def draw_classification_on_image(path, output_path, score, label, stretch_image=
         # date_of_video = datetime(2016-06-20 18:46:22)
         date_of_video = datetime.strptime(name_of_video,"%Y-%m-%d_%H.%M.%S")
 
-        #convert to argentinian date
-        date_of_video -= timedelta(hours=3)
-
         text=date_of_video.strftime("%Y-%m-%d %H:%M")
         if add_frame_id:
             text+="\n\n%d"%frame_id
