@@ -21,7 +21,9 @@ class ThermalImageAugmentation(ImageAugmentation):
         for i in range(len(batch)):
             change = random.choice(np.arange(-max_degrees_change,max_degrees_change+1,0.5))
             if change != 0:
-                batch[i] = (2*change) + batch[i]
+                func = np.vectorize(lambda x:max(0,min(x+2*change,239)))
+                batch[i] = func(batch[i])
+                #batch[i] = (2*change) + batch[i]
         return batch
 
 def build_hdf5_thermal_image_dataset(target_path, image_shape, output_path='dataset.h5',
