@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[3]:
+# In[9]:
 
 #read all files in dataset. divide them in acted videos and real videos
 
@@ -31,7 +31,7 @@ print "dataset_real"
 print {class_id:len(dataset_real[class_id]) for class_id in sorted(dataset_real.keys())}
 
 
-# In[4]:
+# In[10]:
 
 import json
 
@@ -55,7 +55,7 @@ else:
          json.dump(video_owners, f)
 
 
-# In[29]:
+# In[11]:
 
 # discard videos that are corrupted.
 not_found = []
@@ -81,40 +81,48 @@ for class_id in dataset_real.keys():
         else:
             groups[v_group].append((v,class_id))
             
-print "total_different_scenes:",len(groups.keys())
+print "total_different_people:",len(groups.keys())
 #print groups.keys()
 print {g:len(groups[g]) for g in groups.keys()}
 
 
-# In[30]:
+# In[15]:
 
-fold_nr = 1
+fold_nr = 4
 fold_path="/workspace/data/thermix_data/tf_base_dataset/tf_folds/"
+generate_on_the_fly=True
+
 training_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "training.h5")
 val_h5py_path=os.path.join(fold_path,"%d"%fold_nr, "validation.h5")
 
 
-# In[33]:
+# In[16]:
 
 #generate training and validation lists with format 'frame_path class'
 import random
+from sklearn.utils import compute_class_weight
+import numpy as np
 
 def generate_training_validation_dataset(training_proportion=0.8, fold_nr=fold_nr, 
                                          fold_path=fold_path,
-                                         dataset_root="/workspace/data/thermix_data/tf_base_dataset/14_tim"):
+                                         dataset_root="/workspace/data/thermix_data/tf_base_dataset/14_tim",
+                                         balance_training=False):
     training = []
     val = []
     
     for c in dataset_acted.keys():
-        pass
         training.extend([(v,c) for v in dataset_acted[c]])
         #print len(dataset_acted[c])
         #subset = random.sample(dataset_acted[c], (len(dataset_acted[c])*0.8))
         #training.extend([(v,c) for v in subset])
         #val.extend([(v,c) for v in dataset_acted[c] if v not in subset])
     
+    #first fold:
     #val = ['Anne',"Luke","Fiona","Irene", 'Julien', 'Victor']
-    subset = ["Peter", 'Marge', "Henry", "Rick", 'Charles', ] # random.sample(groups.keys(), int(len(groups.keys())*0.5))
+    #subset = ["Peter", 'Marge', "Henry", "Rick", 'Charles', ]
+    
+    #val = ["Henry","Rick","Luke","Fiona","Irene"]
+    subset = ["Peter", 'Marge', 'Charles', 'Anne', 'Victor', 'Julien']
     [training.extend(groups[g]) for g in subset]
     [val.extend(groups[g]) for g in groups.keys() if g not in subset]
     
@@ -134,16 +142,17 @@ def generate_training_validation_dataset(training_proportion=0.8, fold_nr=fold_n
         frames = os.listdir(video_path)
         for fr in frames:
             frames_training.append((os.path.join(video_path,fr),int(c)-1))
-
-    while min_class_len != max(count_training):
-        v,c = random.choice(frames_training)
-        c_id = c
-        if count_training[c_id] > min_class_len:
-            frames_training.remove((v,c))
-            count_training[c_id] -=1
-        else:
-            i+=1
             
+    if balance_training:
+        while min_class_len != max(count_training):
+            v,c = random.choice(frames_training)
+            c_id = c
+            if count_training[c_id] > min_class_len:
+                frames_training.remove((v,c))
+                count_training[c_id] -=1
+            else:
+                i+=1
+
     print count_training
     
     print "Validation frames distribution"
@@ -171,10 +180,12 @@ def generate_training_validation_dataset(training_proportion=0.8, fold_nr=fold_n
         with open(fil,"w") as f:
             for fr,c in dataset:
                 f.write("%s %d\n"%(fr,c))
-                    
-    return training_filepath, val_filepath
+    
+    category_weights = compute_class_weight('balanced', range(5), np.array([c for fr,c in frames_training]))
+    print "Class weights", category_weights
+    return training_filepath, val_filepath, category_weights
                 
-training_file,val_file = generate_training_validation_dataset()
+training_file,val_file,category_weights = generate_training_validation_dataset(balance_training=True)
 
 
 # In[ ]:
@@ -183,7 +194,7 @@ from PIL import Image
 from IPython.display import display
 import random
 
-with open(val_file) as f:
+with open(training_file) as f:
     lines = f.readlines()
 
 for l in random.sample(lines, 10):
@@ -193,24 +204,24 @@ for l in random.sample(lines, 10):
     display(img)
 
 
-# In[ ]:
+# In[18]:
 
 #save training dataset in h5py format
 from training_utils import build_hdf5_thermal_image_dataset
 
-if not os.path.exists(training_h5py_path):
+if not os.path.exists(training_h5py_path) and not generate_on_the_fly:
     build_hdf5_thermal_image_dataset(training_file, (224,224), 
                          output_path=training_h5py_path,
                              mode='file', categorical_labels=True,
                              normalize=False, grayscale=True)
 
 
-# In[ ]:
+# In[19]:
 
 #save validation dataset in h5py format
 from training_utils import build_hdf5_thermal_image_dataset
 
-if not os.path.exists(val_h5py_path):
+if not os.path.exists(val_h5py_path) and not generate_on_the_fly:
     build_hdf5_thermal_image_dataset(val_file, (224,224), 
                          output_path=val_h5py_path,
                              mode='file', categorical_labels=True,
@@ -223,42 +234,95 @@ import tflearn, tensorflow as tf
 from tflearn.layers.core import input_data, dropout, fully_connected,reshape
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.normalization import batch_normalization#local_response_normalization
-#from tflearn.layers.estimator import regression
-from training_utils import ThermalImageAugmentation
+from tflearn.layers.estimator import regression
+from training_utils import ThermalImageAugmentation, thermal_image_preloader
 
-def model(input_placeholder=None):
-    # Real-time data augmentation
+def model(category_weights=[1.,1.,1.,1.,1.]):
+    
     img_aug = ThermalImageAugmentation()
     # Random flip an image
     img_aug.add_random_flip_leftright()
-    img_aug.add_random_temperature_fluctuation(max_degrees_change=2)
+    img_aug.add_random_temperature_fluctuation(max_degrees_change=5)
+    img_aug.add_random_blur(sigma_max=0.2)
     
-    tf_data = input_placeholder or tf.placeholder(tf.float32, shape=(None, 224, 224))
-    network = input_data(placeholder=tf_data, data_augmentation=img_aug)
+    cat_weights_c = tf.constant(category_weights, tf.float32)
+    
+    tf_data = tf.placeholder(tf.float32, shape=(None, 224, 224))
+    network = input_data(placeholder=tf_data)
     
     network = reshape(network, [-1,224,224,1])
+    
+    network = batch_normalization(network)
     
     network = conv_2d(network, 96, 7, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = batch_normalization(network)
+    network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 256, 5, strides=2, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = batch_normalization(network)
+    network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
     network = conv_2d(network, 384, 3, activation='relu')
+    network = batch_normalization(network)
+    network = dropout(network, 0.5)
+    
     network = conv_2d(network, 384, 3, activation='relu')
+    network = batch_normalization(network)
+    network = dropout(network, 0.5)
+    
     
     network = conv_2d(network, 256, 3, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = batch_normalization(network)
+    network = dropout(network, 0.5)
     
     #network = local_response_normalization(network)
-    network = fully_connected(network, 5, activation='softmax')
+    network = fully_connected(network, 5, activation='linear')
+    network = tf.mul(network, cat_weights_c)
+    network = tflearn.activations.softmax (network)
     
     return network, tf_data
+
+name = datetime.strftime(datetime.now(),'%Y-%m-%d_%H%M%S')
+model_dir = "/workspace/data/thermix_data/tf_training"
+
+net, _ = model(category_weights)
+net = regression(net, optimizer='adam',
+                     loss='categorical_crossentropy',
+                     learning_rate=0.001)
+batch_size = 256
+epochs = 500
+
+if generate_on_the_fly:
+    X, Y = thermal_image_preloader(training_file, (224,224), 
+                             mode='file', categorical_labels=True,
+                             normalize=False, grayscale=True)
+    v_X,v_Y = thermal_image_preloader(val_file, (224,224), 
+                             mode='file', categorical_labels=True,
+                             normalize=False, grayscale=True)
+else:
+    import h5py
+    h5f = h5py.File(training_h5py_path)
+    X = h5f['X']
+    Y = h5f['Y']
+
+    v_h5f = h5py.File(val_h5py_path)
+    v_X = v_h5f['X']
+    v_Y = v_h5f['Y']
+
+# Training
+model = tflearn.DNN(net, checkpoint_path=os.path.join(model_dir, name, 'checkpoint'),
+                    tensorboard_dir=model_dir,
+                    tensorboard_verbose=0)
+model.fit(X, Y, n_epoch=1000, validation_set=(v_X,v_Y), shuffle=True,
+          show_metric=True, batch_size=batch_size, snapshot_step=False,
+snapshot_epoch=True, run_id=name)
+
+raise
 
 name = datetime.strftime(datetime.now(),'%Y-%m-%d_%H%M%S')
 model_dir = "/workspace/data/thermix_data/tf_training"
@@ -275,7 +339,7 @@ loss = tflearn.categorical_crossentropy(net, Y_ph)
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(net, 1), tf.argmax(Y_ph, 1)), tf.float32), name='Accuracy')
 optimizer = tflearn.optimizers.Adam(learning_rate=0.001)
 step = tflearn.variable("step", initializer='zeros', shape=[])
-batch_size = 256
+batch_size = 512
 optimizer.build(step_tensor=step)
 optim_tensor = optimizer.get_tensor()
 epochs = 500
