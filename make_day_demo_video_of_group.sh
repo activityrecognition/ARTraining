@@ -40,7 +40,7 @@ to_day=$5
 #DO NOT MODIFY BELOW THIS LINE
 
 #folder where raw frames without movement will be saved
-frames_dir=../ARThermal/frames_no_movement/"$thermix_group"_frames_no_movement
+frames_dir=/workspace/ARThermal/thermix_data/frames_no_movement/"$thermix_group"_frames_no_movement
 
 #folder where the ccv model is located
 model_folder=./trained_models/$model_name
@@ -68,8 +68,6 @@ fi
 python prepare_data_for_training.py --all_labels="$all_labels" -l '["'"$thermix_group"'"]' -i $videos_folder -t '["'"$thermal_tim"'"]' -o $frames_dir -m thermix_1 --remove_movement $size_param
 fi
 
-exit
-
 for day in `seq $from_day $to_day` ; do
 
 echo day_"$day"
@@ -83,23 +81,23 @@ sleep 5s
 gpu_is_busy=$(nvidia-smi | grep ./cnnclassify | wc -l)
 done
 
-if [ -f $model_results_file ]; then
-    results_filepath=$model_results_file \
-    dataset_filepath=$frames_dir/$thermal_tim/thermix_1_files.txt \
-    output_filepath=$frames_dir/$thermal_tim/thermix_1_files.txt.temp \
-    runipy get_non_classified_files.ipynb
+#if [ -f $model_results_file ]; then
+#    results_filepath=$model_results_file \
+#    dataset_filepath=$frames_dir/$thermal_tim/thermix_1_files.txt \
+#    output_filepath=$frames_dir/$thermal_tim/thermix_1_files.txt.temp \
+#    runipy get_non_classified_files.ipynb
+#
+#    cd ../../ccv/bin
+#    ./cnnclassify $frames_dir/$thermal_tim/thermix_1_files.txt.temp $model_path $frames_dir | tee -a $model_results_file
+#    
+#    rm -rf $frames_dir/$thermal_tim/thermix_1_files.txt.temp
+#else
+#    cd ../../ccv/bin
+#    ./cnnclassify $frames_dir/$thermal_tim/thermix_1_files.txt $model_path $frames_dir | tee $model_results_file
+#fi
 
-    cd ../../ccv/bin
-    ./cnnclassify $frames_dir/$thermal_tim/thermix_1_files.txt.temp $model_path $frames_dir | tee -a $model_results_file
-    
-    rm -rf $frames_dir/$thermal_tim/thermix_1_files.txt.temp
-else
-    cd ../../ccv/bin
-    ./cnnclassify $frames_dir/$thermal_tim/thermix_1_files.txt $model_path $frames_dir | tee $model_results_file
-fi
-
-cd ../../thermix/ARTraining
-labeled_frames_path=../ARThermal/frames_for_making_demo_videos/"$model_name"_"$thermix_group""_day""$day"
+#cd ../../thermix/ARTraining
+labeled_frames_path=../ARThermal/thermix_data/frames_for_making_demo_videos/"$model_name"_"$thermix_group""_day""$day"
 
 #if [ ! -d "$labeled_frames_path" ]; then
 output_dir=$labeled_frames_path \
