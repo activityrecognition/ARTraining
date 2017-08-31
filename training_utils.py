@@ -29,7 +29,7 @@ class ThermalImageAugmentation(ImageAugmentation):
 def build_hdf5_thermal_image_dataset(target_path, image_shape, output_path='dataset.h5',
                                      mode='file', categorical_labels=True,
                                      normalize=True, grayscale=False,
-                                     files_extension=None, chunks=True):
+                                     files_extension=None, chunks=True, root_path=None):
     """ Build HDF5 Image Dataset.
     Build an HDF5 dataset by providing either a root folder or a plain text
     file with images path and class id.
@@ -107,8 +107,11 @@ def build_hdf5_thermal_image_dataset(target_path, image_shape, output_path='data
             images, labels = [], []
             for l in f.readlines():
                 l = l.strip('\n').split()
-                images.append(l[0])
-                labels.append(int(l[1]))
+                if not root_path:
+                    images.append(l[0])
+                else:
+                    images.append(os.path.join(root_path,l[0]))
+                labels.append(int(l[1])-1)
 
     n_classes = np.max(labels) + 1
 
@@ -159,7 +162,7 @@ class ThermalImagePreloader(ImagePreloader):
 
 def thermal_image_preloader(target_path, image_shape, mode='file', normalize=True,
                     grayscale=False, categorical_labels=True,
-                    files_extension=None, filter_channel=False):
+                    files_extension=None, filter_channel=False, root_path=None):
     """ Image PreLoader.
     Create a python array (`Preloader`) that loads images on the fly (from
     disk or url). There is two ways to provide image samples 'folder' or
@@ -236,8 +239,11 @@ def thermal_image_preloader(target_path, image_shape, mode='file', normalize=Tru
                     if filter_channel:
                         if get_img_channel(l[0]) != 3:
                             continue
-                    images.append(l[0])
-                    labels.append(int(l[1]))
+                    if not root_path:
+                        images.append(l[0])
+                    else:
+                        images.append(os.path.join(root_path,l[0]))
+                    labels.append(int(l[1])-1)
 
     n_classes = np.max(labels) + 1
     X = ThermalImagePreloader(images, image_shape, normalize, grayscale)
