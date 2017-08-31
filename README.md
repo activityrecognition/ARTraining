@@ -9,13 +9,11 @@ Categories:
 * People
 * Background
 
-Results:
-<div>
-    <a href="https://plot.ly/~pusiol/675/" target="_blank" title="confusion_matrix_normalized (tf)" style="display: block; text-align: center;"><img src="https://plot.ly/~pusiol/675.png" alt="confusion_matrix_normalized (tf)" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="pusiol:675" src="https://plot.ly/embed.js" async></script>
-</div>
+Results: https://plot.ly/~pusiol/675/confusion-matrix/
 
-Available only for academic use.
+Available for academic use only. For commercial applications contact us at contact@activityrecognition.com
 
 Please, cite as:
 Pusiol, G., Polacov, F. and Pusiol P. 2016. Thermset: Anchor pose detector for seniors living independently or in nursing homes using thermal images 
+
+More info: http://activityrecognition.com/thermset
