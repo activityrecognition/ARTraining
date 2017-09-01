@@ -1,19 +1,24 @@
-### Pose anchors detector using thermal cameras
+### Thermset: thermal images database of seniors living independently and in nursing homes
 
-Dataset and, training and evaluation scripts for classifying thermal images of seniors living independently and in nursing homes among 5 anchor poses.
-
-Categories:
+We labeled each image with one of the following classes:
 * Lying
 * Sitting
 * Standing
 * People
 * Background
 
-Results: https://plot.ly/~pusiol/675/confusion-matrix/
+We split the dataset in training/validation sets and trained a 5-layers convolutional neural network classification.
+Results available at https://plot.ly/~pusiol/675/confusion-matrix/
 
-Available for academic use only. For commercial applications contact us at contact@activityrecognition.com
+For reproducing the experiment done, use the scripts train_tnet5.ipynb and eval_tnet5.ipynb
 
-Please, cite as:
-Pusiol, G., Polacov, F. and Pusiol P. 2016. Thermset: Anchor pose detector for seniors living independently or in nursing homes using thermal images 
+The dataset is available under license Creative Commons Attribution-NonCommercial 4.0 International. 
 
-More info: http://activityrecognition.com/thermset
+Please, cite the dataset as:
+Polacov F., and Pusiol P. 2016. Thermset: thermal images database of seniors living independently and in nursing homes
+
+More info: http://activityrecognition.com
+
+To contact the authors:
+fpolacov@activityrecognition.com
+ppusiol@activityrecognition.com
