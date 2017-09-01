@@ -1,18 +1,21 @@
 # Thermset
-Our goal is to help frail elders to live independently and safe for longer periods of time. To achieve such a goal, it is crucial to develop cost-effective methods to monitor their daily activities is crucial. We propose to automatically detect and track these activities using AI and thermal data. Data is at the core of any AI algorithm. Given the lack of openly available datasets of its kind, we constructed Thermset. Thermset, is the first open for research dataset containing long term thermal videos of seniors living independently at home or nursing homes. 
+Our goal is to help frail elders to live independently and safe for longer periods of time. To achieve such a goal, it is crucial to develop cost-effective methods to monitor their daily activities. We propose to automatically detect and track these activities using AI and thermal data. Data is at the core of any AI algorithm. Given the lack of openly available datasets of its kind, we constructed Thermset. Thermset, is the first open for research dataset containing long term thermal videos of seniors living independently at home or nursing homes. 
 
 For more information about this work visit http://activityrecognition.com/thermset
+
 # Download Thermset
 Thermset contains raw and labeled data. Before using the data, read the "terms of use" and "License" described below.
 
 ## Raw Thermset data
-We have collected themal videos of seniors living independently at home and nursing homes. You can download the raw data [Thermset Raw](https://s3-us-west-2.amazonaws.com/thermset/thermset_v1.1.tar), this is ~11 GB. 
+We have collected themal videos (about 3 months) of seniors living independently at home and nursing homes. You can download the raw data [Thermset Raw](https://s3-us-west-2.amazonaws.com/thermset/thermset_v1.1.tar), this is ~11 GB. 
  
 ## Labeled Thermset events
 We labeled five important events (1) Lying (2) Sitting (3) Standing (4) People (5) Background. The labeled data can be found in the "dataset" folder.
 
 # Experiment 
-We have trained a neural network classifier to detect the labeled events. The results of our experiment can be found in the paper: "Vision-based Approach to Senior Healthcare: Convolutional Neural Networks for Five Clinical States. Zelun Luo, Alisha Rege, Guido Pusiol, Arnold Milstein, Li Fei-Fei, N. Lance Downing. American Medical Informatics Association (AMIA) 2017. Accepted paper."
+We have trained a neural network classifier to detect the labeled events. 
+
+The results of our experiment can be found in: "Vision-based Approach to Senior Healthcare: Convolutional Neural Networks for Five Clinical States. Zelun Luo, Alisha Rege, Guido Pusiol, Arnold Milstein, Li Fei-Fei, N. Lance Downing. American Medical Informatics Association (AMIA) 2017."
 
 To reproduce the results of the paper use the scripts: train_tnet5.ipynb and eval_tnet5.ipynb. 
 
