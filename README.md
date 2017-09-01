@@ -22,7 +22,7 @@ To reproduce the results of the paper use the scripts: train_tnet5.ipynb and eva
 # License
 The dataset is available under license Creative Commons Attribution-NonCommercial 4.0 International. 
 Cite the Thermset authors as:
-"Pusiol G., and Polacov F., and Pusiol P.  2016. Thermset: A thermal database of seniors living independently and in nursing homes."
+"Pusiol G., Polacov F., and Pusiol P. 2017. Thermset: A thermal database of seniors living independently and in nursing homes."
 
 # Terms of use
 Thermset is open for research purposes. Researchers interested in using the dataset must complete the form described below and send it by email to fpolacov@activityrecognition.com. 
