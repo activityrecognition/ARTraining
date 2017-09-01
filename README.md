@@ -40,5 +40,7 @@ Thermset is open for research purposes. Researchers interested in using the data
 
 # Contact 
 fpolacov@activityrecognition.com
+
 ppusiol@activityrecognition.com
+
 guido@cs.stanford.edu
